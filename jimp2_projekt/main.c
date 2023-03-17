@@ -1,43 +1,77 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "node.h"
 
+#ifndef NODE
+#define NODE
+#include "node.h"
+#endif
+
+#ifndef KEY
+#define KEY
+#include "key.h"
+#endif
+
+#include "fileWriter.h"
 
 int main(int args, char **argv) {
-	
-	FILE *in = args > 1 ? fopen(argv[1], "r") : stdin;
-	if(in == NULL) {	
+	printf("%ld\n",sizeof(int));
+
+	FILE *in = args > 1 ? fopen(argv[1], "rb") : stdin;
+	if(in == NULL) {
 		fprintf(stderr, "Error: Cannot open infile \"%s\"\n", argv[1]);
 		return EXIT_FAILURE;
 	}
 
-	dynamicArray *nodes = makeDynamicArray( 8 );	
+	dynamicArray *nodes = makeDynamicArray( 8 );
 
 	char x;
-	while( ( x = (char)fgetc( in ) ) !=EOF ) {
+	while( ( x = (char)fgetc( in ) ) != EOF ) {
 		int bylo = 0;
 		for(int i = 0; i < nodes->n; i++) {
-			if( nodes->t[i].value == x ) {
+			if( nodes->t[i]->value == x ) {
 				bylo = 1;
-				nodes->t[i].quantity++;
+				nodes->t[i]->quantity++;
 				break;
 			}
 		}
 		if( bylo == 0 )
 			add( nodes, x );
 	}
-	
 
-	 //TEST LISCI
+
+	printf("WEZLY PRZED:\n");
 	for(int i = 0; i < nodes->n; i++)
-		printf("Znak: %c - %d razy\n", nodes->t[i].value, nodes->t[i].quantity);
-
-	/*
+		printf("Wezel nr: %d, Znak: %c - %d razy, wskaznik swoj: %p, wskaznik upper: %p\n\n", i, nodes->t[i]->value, nodes->t[i]->quantity, nodes->t[i] ,nodes->t[i]->upper );
+	/*i
 	for(int i = 0; i < nodes->size; i++)
-                printf("Wezel nr %d - %d\n", i, nodes->t[i].quantity);
+                printf("Wezel nr %d - %d\n", i, nodes->t[i]->quantity);
 	*/
 
-	//makeTree( nodes );
+	makeTree( nodes );
+
+	key_type *keys;
+	keys = InitKeyArray(256);
+	AssignKeys(*nodes->t[nodes->n -1], keys,0,0);
+
+	FILE *out = fopen("output.txt","wb");
+	InitFile(out);
+	WriteCharToFile(4,4);
+	WriteCharToFile(4,1);
+	
+	WriteIntWrap(16,20560);
+	WriteIntWrap(4,4);
+	WriteCharToFile(4,15);
+
+	int i;
+	for(i=0;i<256;i++)
+	{
+		printf("%d: %d %d %s\n", i, keys[i].value, keys[i].length, KeyToCode(keys[i]));
+		WriteIntWrap(16,16705);
+	}
+
+	printf("WEZLY PO:\n");
+	for(int i = 0; i < nodes->n; i++)
+                printf("Wezel nr: %d, Znak: %c - %d razy, wskaznik swoj: %p, wskaznik upper: %p\n\n", i, nodes->t[i]->value, nodes->t[i]->quantity, nodes->t[i], nodes->t[i]->upper );
 
 	return EXIT_SUCCESS;
 }
