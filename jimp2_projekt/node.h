@@ -1,3 +1,6 @@
+#ifndef NODE
+#define NODE
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,7 +13,7 @@ typedef struct node {
 } node_t;
 
 //dynamic array of nodes
-typedef struct dynamicArray {     
+typedef struct dynamicArray {
 	node_t **t;               //array of pointers to nodes
 	int size;                 //size of array
 	int n;                    //amount of nodes
@@ -24,4 +27,6 @@ void add( dynamicArray *, char );
 
 void combineNodes( dynamicArray *, node_t *, node_t * );
 
-void makeTree( dynamicArray * ); 
+void makeTree( dynamicArray * );
+
+#endif // NODE

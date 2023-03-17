@@ -1,6 +1,5 @@
 #include "fileReader.h"
 
-
 unsigned char cache;
 long long int totalBitCount;
 int bitwiseCount;
