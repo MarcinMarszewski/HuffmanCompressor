@@ -1,47 +1,62 @@
-#include "fileReader.h"
+#include "fileWriter.h"
 
-unsigned char cache;
-long long int totalBitCount;
-int bitwiseCount;
-FILE * read;
+//ca³oœæ nie testowana
+//nale¿y poddaæ testom
 
-int WriteIntWrap(int count, int in)
+unsigned char taken, next;
+unsigned char emptyEndBitCount;
+int bitPoint;
+int bitsTillEnd;
+FILE * write;
+
+//nie ma sensu
+
+//count: 1-8
+//zwraca ile bitow pobral
+int TakeMultibitFromFile(int count,unsigned char * out)
 {
+    *out='\0';
     int i;
-    for(i=count;i>0;i-=8)
+    unsigned char tmp;
+	for(i=0;i<count;i++)
     {
-    in>>=8;
-    WriteCharToFile(8<count?8:count,(unsigned char)in);
+        if(TakeBitFromFile(&tmp)==0)return i;
+        out*=2;
+        out+=tmp;
     }
-    return bitwiseCount;
+	return count;
 }
 
-int WriteCharToFile(int count, unsigned char in)
+//powinno uwzglêdniaæ dopisane bity w ostatnim bajcie
+//1-pobrano bit
+//0-brak bitów
+int TakeBitFromFile(unsigned char *out)
 {
-	in<<=(8-count);
-	int i;
-	for(i=0;i<count;i++)
-	{
-		cache=cache<<1;
-		if(in>127)cache++;
-		in<<=1;
+    *out='\0';
+    if(bitPoint==8)
+    {
+        if(fread(&next,1,1,write)==0)bitsTillEnd=emptyEndBitCount==0?0:8-emptyEndBitCount;
+        if(bitsTillEnd==0)return 0;
+        if(bitsTillEnd>0)bitsTillEnd--;
+        taken=next;
+        bitPoint=0;
+    }
+    bitPoint++;
+    *out = taken>127?1:0;
+    taken<<=1;
+    return 1;
 
-		totalBitCount++;
-		bitwiseCount++;
-		if(bitwiseCount==8)
-		{
-			bitwiseCount=0;
-			fwrite(&cache,1,1,write);
-		}
-	}
-	return bitwiseCount;
 }
 
 void InitFile(FILE * file)
 {
-	totalBitCount=0;
-	bitwiseCount=0;
+	bitPoint=8;
 	write = file;
-	cache= '\0';
+	taken= '\0';
+	bitsTillEnd=-1;
 }
 
+void SetEmptyEndBitCount(unsigned char s)
+{
+    emptyEndBitCount = s;
+}
