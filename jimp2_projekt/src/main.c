@@ -1,17 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifndef NODE
-#define NODE
 #include "node.h"
-#endif
-
-#ifndef KEY
-#define KEY
 #include "key.h"
-#endif
-
 #include "fileWriter.h"
+#include "fileReader.h"
 
 int main(int args, char **argv) {
 	printf("%ld\n",sizeof(int));
@@ -58,16 +50,25 @@ int main(int args, char **argv) {
 	WriteCharToFile(4,4);
 	WriteCharToFile(4,1);
 	
-	WriteIntWrap(16,20560);
+	//WriteIntWrap(16,20560);
 	WriteIntWrap(4,4);
 	WriteCharToFile(4,15);
 
-	int i;
-	for(i=0;i<256;i++)
-	{
-		printf("%d: %d %d %s\n", i, keys[i].value, keys[i].length, KeyToCode(keys[i]));
-		WriteIntWrap(16,16705);
-	}
+	//int i;
+	//for(i=0;i<256;i++)
+	//{
+	//	printf("%d: %d %d %s\n", i, keys[i].value, keys[i].length, KeyToCode(keys[i]));
+	//	WriteIntWrap(16,16705);
+	//}
+
+	fclose(out);
+	unsigned char t;
+	out= fopen("output.txt","rb");
+	InitReadFile(out);
+	SetEmptyEndBitCount(0);
+	while(TakeBitFromFile(&t)==1)
+		printf("%d",t);
+	printf("\n");
 
 	printf("WEZLY PO:\n");
 	for(int i = 0; i < nodes->n; i++)

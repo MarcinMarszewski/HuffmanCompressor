@@ -12,7 +12,7 @@ int TakeMultibitFromFile(int count,unsigned char * out);
 //0-brak bitów
 int TakeBitFromFile(unsigned char *out);
 
-void InitFile(FILE * file);
+int InitReadFile(FILE * file);
 
 void SetEmptyEndBitCount(unsigned char s);
 

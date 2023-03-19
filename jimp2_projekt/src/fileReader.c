@@ -1,7 +1,7 @@
-#include "fileWriter.h"
+#include "fileReader.h"
 
-//ca³oœæ nie testowana
-//nale¿y poddaæ testom
+//calosc nie testowana
+//nalezy poddac testom
 
 unsigned char taken, next;
 unsigned char emptyEndBitCount;
@@ -20,14 +20,14 @@ int TakeMultibitFromFile(int count,unsigned char * out)
     unsigned char tmp;
 	for(i=0;i<count;i++)
     {
-        if(TakeBitFromFile(&tmp)==0)return i;
-        out*=2;
-        out+=tmp;
+if(TakeBitFromFile(&tmp)==0)return i;
+        *out*=2;
+        *out+=tmp;
     }
 	return count;
 }
 
-//powinno uwzglêdniaæ dopisane bity w ostatnim bajcie
+//powinno uwzgledniac dopisane bity w ostatnim bajcie
 //1-pobrano bit
 //0-brak bitów
 int TakeBitFromFile(unsigned char *out)
@@ -35,25 +35,28 @@ int TakeBitFromFile(unsigned char *out)
     *out='\0';
     if(bitPoint==8)
     {
-        if(fread(&next,1,1,write)==0)bitsTillEnd=emptyEndBitCount==0?0:8-emptyEndBitCount;
-        if(bitsTillEnd==0)return 0;
-        if(bitsTillEnd>0)bitsTillEnd--;
+        if(fread(&next,1,1,write)==0&&bitsTillEnd<0)bitsTillEnd=8-emptyEndBitCount;
         taken=next;
         bitPoint=0;
     }
+    if(bitsTillEnd>0)bitsTillEnd--;
+    if(bitsTillEnd==0)return 0;
+    
+    //printf("bitPoint:%d bitsTillEnd:%d\n",bitPoint,bitsTillEnd);
     bitPoint++;
     *out = taken>127?1:0;
     taken<<=1;
     return 1;
-
 }
 
-void InitFile(FILE * file)
+//0 means empty file
+int InitReadFile(FILE * file)
 {
 	bitPoint=8;
 	write = file;
 	taken= '\0';
 	bitsTillEnd=-1;
+	return fread(&taken,1,1,write);
 }
 
 void SetEmptyEndBitCount(unsigned char s)
