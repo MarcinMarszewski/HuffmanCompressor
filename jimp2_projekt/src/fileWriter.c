@@ -9,7 +9,7 @@ FILE * write;
 int WriteIntWrap(int count, int in)
 {
     int help=count/8;
-    if(count*8!=help)WriteCharToFile(count-(help*8),(unsigned char)(in>>(help*8)));
+    if(help*8!=count)WriteCharToFile(count-(help*8),(unsigned char)(in>>(help*8)));
     int i=(help-1)*8;
     while(i>=0)
     {

@@ -13,9 +13,9 @@ FILE * write;
 
 //count: 1-8
 //zwraca ile bitow pobral
-int TakeMultibitFromFile(int count,unsigned char * out)
+int TakeMultibitFromFile(int count,unsigned int * out)
 {
-    *out='\0';
+    *out=0;
     int i;
     unsigned char tmp;
 	for(i=0;i<count;i++)
@@ -32,16 +32,16 @@ if(TakeBitFromFile(&tmp)==0)return i;
 //0-brak bitów
 int TakeBitFromFile(unsigned char *out)
 {
-    *out='\0';
+    *out=0;
+    if(bitsTillEnd>0)bitsTillEnd--;
+    if(bitsTillEnd==0)return 0;
     if(bitPoint==8)
     {
         if(fread(&next,1,1,write)==0&&bitsTillEnd<0)bitsTillEnd=8-emptyEndBitCount;
         taken=next;
         bitPoint=0;
     }
-    if(bitsTillEnd>0)bitsTillEnd--;
-    if(bitsTillEnd==0)return 0;
-    
+   
     //printf("bitPoint:%d bitsTillEnd:%d\n",bitPoint,bitsTillEnd);
     bitPoint++;
     *out = taken>127?1:0;
@@ -52,9 +52,9 @@ int TakeBitFromFile(unsigned char *out)
 //0 means empty file
 int InitReadFile(FILE * file)
 {
-	bitPoint=8;
+	bitPoint=0;
 	write = file;
-	taken= '\0';
+	taken= 0;
 	bitsTillEnd=-1;
 	return fread(&taken,1,1,write);
 }

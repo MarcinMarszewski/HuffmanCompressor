@@ -2,9 +2,14 @@
 #define TREEWRITER
 
 #include "fileWriter.h"
+#include "fileReader.h"
+#include "node.h"
+#include <stdlib.h>
 
-void WriteTree(node_t head);
+int WriteTree(node_t* head);
 
-void WriteTreeWrap(node_t head);
+int ReadTree(node_t* head);
+
+void SetWordSize(int n);
 
 #endif // TREEWRITER

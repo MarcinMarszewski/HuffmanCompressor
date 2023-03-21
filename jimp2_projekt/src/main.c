@@ -4,6 +4,8 @@
 #include "key.h"
 #include "fileWriter.h"
 #include "fileReader.h"
+#include "treeWriter.h"
+
 
 int main(int args, char **argv) {
 	printf("%ld\n",sizeof(int));
@@ -45,34 +47,26 @@ int main(int args, char **argv) {
 	keys = InitKeyArray(256);
 	AssignKeys(*nodes->t[nodes->n -1], keys,0,0);
 
+	SetWordSize(8);
+
 	FILE *out = fopen("output.txt","wb");
 	InitFile(out);
-	WriteCharToFile(4,4);
-	WriteCharToFile(4,1);
-	
-	//WriteIntWrap(16,20560);
-	WriteIntWrap(4,4);
-	WriteCharToFile(4,15);
 
-	//int i;
-	//for(i=0;i<256;i++)
-	//{
-	//	printf("%d: %d %d %s\n", i, keys[i].value, keys[i].length, KeyToCode(keys[i]));
-	//	WriteIntWrap(16,16705);
-	//}
-
+	WriteTree(nodes->t[nodes->n -1]);
+	WriteCharToFile(8,0);
 	fclose(out);
+
 	unsigned char t;
-	out= fopen("output.txt","rb");
-	InitReadFile(out);
+	FILE *r= fopen("output.txt","rb");
+	InitReadFile(r);
 	SetEmptyEndBitCount(0);
+
 	while(TakeBitFromFile(&t)==1)
 		printf("%d",t);
-	printf("\n");
 
-	printf("WEZLY PO:\n");
-	for(int i = 0; i < nodes->n; i++)
-                printf("Wezel nr: %d, Znak: %c - %d razy, wskaznik swoj: %p, wskaznik upper: %p\n\n", i, nodes->t[i]->value, nodes->t[i]->quantity, nodes->t[i], nodes->t[i]->upper );
+	//printf("WEZLY PO:\n");
+	//for(int i = 0; i < nodes->n; i++)
+        //        printf("Wezel nr: %d, Znak: %c - %d razy, wskaznik swoj: %p, wskaznik upper: %p\n\n", i, nodes->t[i]->value, nodes->t[i]->quantity, nodes->t[i], nodes->t[i]->upper );
 
 	return EXIT_SUCCESS;
 }
