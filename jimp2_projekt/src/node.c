@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <limits.h>
-#include <unistd.h>
 #include <string.h>
 #include "node.h"
 
@@ -77,7 +76,6 @@ void makeTree( dynamicArray *da ) {  //chyba jest wszystko git
 				}
 			}	
 		}
-	printf("min1: %d, wartosc: %c\nmin2: %d, wartosc: %c\n\n", min1->quantity, min1->value, min2->quantity, min2->value );
 	combineNodes( da, min1, min2 ); 
 	}
 }

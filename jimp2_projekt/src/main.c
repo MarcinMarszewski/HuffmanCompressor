@@ -31,14 +31,6 @@ int main(int args, char **argv) {
 	}
 
 
-	printf("WEZLY PRZED:\n");
-	for(int i = 0; i < nodes->n; i++)
-		printf("Wezel nr: %d, Znak: %c - %d razy, wskaznik swoj: %p, wskaznik upper: %p\n\n", i, nodes->t[i]->value, nodes->t[i]->quantity, nodes->t[i] ,nodes->t[i]->upper );
-	/*i
-	for(int i = 0; i < nodes->size; i++)
-                printf("Wezel nr %d - %d\n", i, nodes->t[i]->quantity);
-	*/
-
 	makeTree( nodes );
 
 	key_type *keys;
@@ -69,10 +61,6 @@ int main(int args, char **argv) {
 	while(TakeBitFromFile(&t)==1)
 		printf("%d",t);
 	printf("\n");
-
-	printf("WEZLY PO:\n");
-	for(int i = 0; i < nodes->n; i++)
-                printf("Wezel nr: %d, Znak: %c - %d razy, wskaznik swoj: %p, wskaznik upper: %p\n\n", i, nodes->t[i]->value, nodes->t[i]->quantity, nodes->t[i], nodes->t[i]->upper );
 
 	return EXIT_SUCCESS;
 }
