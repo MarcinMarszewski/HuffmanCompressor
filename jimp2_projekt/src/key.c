@@ -11,11 +11,11 @@ key_type *InitKeyArray(int len)
 //przetwarza drzewo w tablice kluczy
 void AssignKeys(node_t head, key_type *keys, int val, int len) // uzycie z val=0, len=0
 {
-	printf("quantity: %d  value: %d  val:%d  len:%d\n", head.quantity, head.value,val,len);
+	printf("quantity: %d  value: %c  val:%d  len:%d\n", head.quantity, head.value,val,len);
 	if(head.left!=NULL) 
 	{
-		AssignKeys(*(head.left), keys, val*2,len+1);
-		AssignKeys(*(head.right), keys, (val*2)+1,len+1);
+		AssignKeys(*(head.left), keys, val*2, len+1);
+		AssignKeys(*(head.right), keys, (val*2)+1, len+1);
 	}
 	else
 	{
