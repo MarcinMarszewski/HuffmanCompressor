@@ -7,15 +7,14 @@ key_type *InitKeyArray(int len)
 	return keys;
 }
 
-
 //przetwarza drzewo w tablice kluczy
 void AssignKeys(node_t head, key_type *keys, int val, int len) // uzycie z val=0, len=0
 {
 	printf("quantity: %d  value: %d  val:%d  len:%d\n", head.quantity, head.value,val,len);
 	if(head.left!=NULL) 
 	{
-		AssignKeys(*(head.left), keys, val*2,len+1);
-		AssignKeys(*(head.right), keys, (val*2)+1,len+1);
+		AssignKeys(*(head.left), keys, val*2, len+1);
+		AssignKeys(*(head.right), keys, (val*2)+1, len+1);
 	}
 	else
 	{
@@ -23,7 +22,6 @@ void AssignKeys(node_t head, key_type *keys, int val, int len) // uzycie z val=0
 		keys[head.value].length = len;
 	}
 }
-
 
 //zmien key na klucz
 char* KeyToCode(key_type key)

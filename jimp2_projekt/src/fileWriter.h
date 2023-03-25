@@ -10,6 +10,4 @@ int WriteCharToFile(int count, unsigned char in);
 
 void InitFile(FILE *in);
 
-
-
 #endif

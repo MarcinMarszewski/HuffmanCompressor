@@ -36,7 +36,7 @@ void doubleSize( dynamicArray *da ) {
         da->size *= 2;
 }
 
-void add( dynamicArray *da, char x ) {
+void add( dynamicArray *da, unsigned short x ) {
         if( da->n == da->size )
                 doubleSize( da );
         da->t[da->n]->value = x;
@@ -54,7 +54,7 @@ void combineNodes( dynamicArray *da, node_t *min1, node_t *min2 ) {
 	da->n++;
 }
 
-void makeTree( dynamicArray *da ) {  //chyba jest wszystko git
+void makeTree( dynamicArray *da ) { 
 	node_t tmp1;
 	node_t tmp2;
 	int l=3;

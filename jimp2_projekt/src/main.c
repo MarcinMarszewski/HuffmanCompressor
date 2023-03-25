@@ -5,10 +5,10 @@
 #include "fileWriter.h"
 #include "fileReader.h"
 #include "treeWriter.h"
+#include "compress.h"
 
 
 int main(int args, char **argv) {
-	printf("%ld\n",sizeof(int));
 
 	FILE *in = args > 1 ? fopen(argv[1], "rb") : stdin;
 	if(in == NULL) {
@@ -18,25 +18,14 @@ int main(int args, char **argv) {
 
 	dynamicArray *nodes = makeDynamicArray( 8 );
 
-	char x;
-	while( ( x = (char)fgetc( in ) ) != EOF ) {
-		int bylo = 0;
-		for(int i = 0; i < nodes->n; i++) {
-			if( nodes->t[i]->value == x ) {
-				bylo = 1;
-				nodes->t[i]->quantity++;
-				break;
-			}
-		}
-		if( bylo == 0 )
-			add( nodes, x );
-	}
+	leavesMaker_8_16(in, nodes, 1);         	//tworzy tablice lisci dla 8 bitow
 
+	fclose(in);
 
 	makeTree( nodes );
-
+	
 	key_type *keys;
-	keys = InitKeyArray(256);
+	keys = InitKeyArray(256);  //65536
 	AssignKeys(*nodes->t[nodes->n -1], keys,0,0);
 
 	SetWordSize(8);

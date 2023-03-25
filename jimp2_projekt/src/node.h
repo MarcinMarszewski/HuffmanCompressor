@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 typedef struct node {
-	char value;
+	unsigned short value;
 	int quantity;
 	struct node *left;
 	struct node *right;
@@ -23,7 +23,7 @@ dynamicArray *makeDynamicArray( int );
 
 void doubleSize( dynamicArray * );
 
-void add( dynamicArray *, char );
+void add( dynamicArray *, unsigned short );
 
 void combineNodes( dynamicArray *, node_t *, node_t * );
 
