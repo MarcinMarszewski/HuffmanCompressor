@@ -2,6 +2,7 @@
 #define TREEWRITER
 
 #include "fileWriter.h"
+#include "node.h"
 
 void WriteTree(node_t head);
 

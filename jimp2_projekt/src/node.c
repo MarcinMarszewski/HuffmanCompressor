@@ -36,7 +36,7 @@ void doubleSize( dynamicArray *da ) {
         da->size *= 2;
 }
 
-void add( dynamicArray *da, unsigned char x ) {
+void add( dynamicArray *da, unsigned short x ) {
         if( da->n == da->size )
                 doubleSize( da );
         da->t[da->n]->value = x;
