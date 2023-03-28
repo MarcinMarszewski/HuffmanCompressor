@@ -20,7 +20,8 @@ int WriteTree(node_t* head)
 
 int ReadTree(node_t* head)
 {
-	TakeBitFromFile(&charTmp);
+	if(TakeBitFromFile(&charTmp)==0) return -1;
+	printf("%d\n",charTmp);
 	if(charTmp==0)
 	{
 		head->left = malloc( sizeof(head->left));
@@ -32,9 +33,22 @@ int ReadTree(node_t* head)
 	{
 		TakeMultibitFromFile(wordSize,&intTmp);
 		head->value = intTmp;
+		head->left=NULL;
+		printf("%d\n",head->value);
 	}
 }
 
+int WriteTreeFillBite(node_t * head)
+{
+	WriteTree(head);
+	WriteCharToFile(8-GetWriteBitwiseCount(),0);
+}
+
+int ReadTreeFillBite(node_t* head)
+{
+	ReadTree(head);
+	TakeMultibitFromFile(8-GetReadBitwiseCount(),&intTmp);
+}
 void SetWordSize(int n)
 {
 	wordSize=n;

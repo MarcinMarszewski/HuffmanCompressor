@@ -16,4 +16,6 @@ int InitReadFile(FILE * file);
 
 void SetEmptyEndBitCount(unsigned char s);
 
+int GetReadBitwiseCount();
+
 #endif // FILEREADER
