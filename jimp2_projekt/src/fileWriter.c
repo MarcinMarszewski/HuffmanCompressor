@@ -40,6 +40,11 @@ int WriteCharToFile(int count, unsigned char in)
 	return bitwiseCount;
 }
 
+int GetWriteBitwiseCount()
+{
+	return bitwiseCount;
+}
+
 void InitFile(FILE * file)
 {
 	totalBitCount=0;

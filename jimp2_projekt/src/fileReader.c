@@ -32,13 +32,14 @@ if(TakeBitFromFile(&tmp)==0)return i;
 //0-brak bitów
 int TakeBitFromFile(unsigned char *out)
 {
+	printf("taken:%d next:%d emptyEndBitCount:%d bitPoint:%d bitsTillEnd:%d\n",taken,next,emptyEndBitCount,bitPoint,bitsTillEnd);
     *out=0;
     if(bitsTillEnd>0)bitsTillEnd--;
     if(bitsTillEnd==0)return 0;
     if(bitPoint==8)
     {
         if(fread(&next,1,1,write)==0&&bitsTillEnd<0)bitsTillEnd=8-emptyEndBitCount;
-        taken=next;
+	taken=next;
         bitPoint=0;
     }
    
@@ -62,4 +63,9 @@ int InitReadFile(FILE * file)
 void SetEmptyEndBitCount(unsigned char s)
 {
     emptyEndBitCount = s;
+}
+
+int GetReadBitwiseCount()
+{
+	return bitPoint;
 }
