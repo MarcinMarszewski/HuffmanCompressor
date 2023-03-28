@@ -54,6 +54,12 @@ int main(int args, char **argv) {
 
 	printf("File opened\n");
 
+	FILE *in2 = fopen(argv[1], "rb");
+	FILE *out2 = fopen(argv[2], "wb");
+
+	unsigned char t;
+	FILE *r= fopen("output.txt","rb");
+	InitReadFile(r);
 	SetEmptyEndBitCount(0);
 	InitReadFile(compressed);
 	InitFile(decompressed);
