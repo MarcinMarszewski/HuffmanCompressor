@@ -37,6 +37,10 @@ int main(int args, char **argv) {
 	WriteCharToFile(8,0);
 	fclose(out);
 
+	FILE *in2 = fopen(argv[1], "rb");
+	FILE *out2 = fopen(argv[2], "wb");
+	compressToFile_8_16(in2, out2, 1, keys);
+
 	unsigned char t;
 	FILE *r= fopen("output.txt","rb");
 	InitReadFile(r);
