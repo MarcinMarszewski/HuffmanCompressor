@@ -29,8 +29,8 @@ int WriteCharToFile(int count, unsigned char in)
 		if(in>127)cache++;
 		in<<=1;
 
-		totalBitCount++;
 		bitwiseCount++;
+		totalBitCount++;
 		if(bitwiseCount==8)
 		{
 			bitwiseCount=0;
