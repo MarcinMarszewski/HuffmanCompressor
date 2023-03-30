@@ -4,7 +4,7 @@ FILE * read;
 char tmp, next;
 char canRead;
 char countTillEnd,leftover, pointer;
-
+char decode;
 //count: 1-8
 //zwraca podaną liczbę bitów w intcie
 int TakeMultibitFromFile(int count)
@@ -26,6 +26,7 @@ char TakeBitFromFile()
 	{
 		pointer=0;
 		tmp=next;
+		tmp = tmp^decode;
 		if(fread(&next,1,1,read)==0)countTillEnd=8-leftover;
 	}
 	if(countTillEnd>0)countTillEnd--;
@@ -52,6 +53,7 @@ void FillBite()
 //inicjuje plik do czytania
 int InitReadFile(FILE * file)
 {
+	decode=0;
 	countTillEnd=-1;
 	leftover=0;
 	canRead=1;
@@ -71,4 +73,9 @@ char CanRead()
 void SetEmptyEndBits(char ends)
 {
 	leftover=ends;
+}
+
+void SetReadDecode(char dec)
+{
+	decode=dec;
 }

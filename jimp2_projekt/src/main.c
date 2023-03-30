@@ -22,13 +22,16 @@
 
 int main(int argc, char **argv) {
 
-	int option, compression=8, i;
+	int i, option;
 	FILE* in;
 	FILE *out;
 	char* fileName  = malloc(100*sizeof(*fileName ));
 	char* fileName2 = malloc(100*sizeof(*fileName2));
-	char xordPassword=0,isCompressed=0,isProtected=0,xordFileCheck,compressionData,tmpA,tmpB;
+	char xordPassword=0,isCompressed=0,isProtected=0,compression=8,uncompressed=0,leftover=0,xordFileCheck,compressionData,tmpA,tmpB;
+	unsigned char uncompressedData;
 	printf("Ustawienie zmiennych\n");
+	
+	//xordPassword=17;//tymczasowe testy
 
 	while((option=getopt(argc,argv,"f:o:p:h"))!=-1)
 	{
@@ -38,11 +41,6 @@ int main(int argc, char **argv) {
 				in = fopen(optarg,"rb");
 				strcpy(fileName,optarg);
 				strcpy(fileName2,optarg);
-				if(in==NULL) 
-				{
-					fprintf(stderr,"Nie udało się otworzyć pliku %s\n",optarg);
-					return -1;
-				}
 				break;
 
 			case 'o':
@@ -68,6 +66,12 @@ int main(int argc, char **argv) {
 				break;
 		}
 	}
+
+	if(in==NULL)
+	{
+		fprintf(stderr,"Nie udało się otworzyć pliku %s\n",fileName);
+		return-1;
+	}
 	
 	if(fread(&tmpA,1,1,in)==0||fread(&tmpB,1,1,in)==0)
 	{
@@ -88,32 +92,40 @@ int main(int argc, char **argv) {
 	
 	fread(&compressionData,1,1,in);
 	fread(&xordFileCheck,1,1,in);	//wczytanie pierwszych 4 bajtów metadanych
+	fread(&uncompressedData,1,1,in);
 
 	if(isProtected==1)
 	{
-		printf("Ustawienie wartości hasła\n"); //do zrobienia
+		printf("Ustawienie wartości hasła\n");
 	
 	}
 	if(isCompressed==1)
 	{
-		printf("Dekompresja bez hasła\n");
-		//dekompresja bez hasła
+		/*  pozyskiwanie danych o kompresji
+		compression=(1+(compressionData%4))*4;
+		compressionData>>=2;
+		uncompressed=(compressionData%4)*4;
+		compressionData>>=2;
+		leftover=compressionData%8;
+		*/
+
+
+		printf("Dekompresja\n");
+
 		node_t *head = malloc(sizeof(*head));
 		strcat(fileName2,".decomp");
 		out= fopen(fileName2,"wb");
-
-		//sprawdzenie stopnia kompresji
-		compression=8;
 
 		SetWordSize(compression);
 
 		InitReadFile(in);
 		InitFile(out);
-		SetEmptyEndBits(0); //sprawdzenie z metadanych
+		SetEmptyEndBits(leftover);
+		SetDecode(xordPassword);
 		
 		ReadTreeFillBite(head);
-		DecompressData(head,8);
-
+		DecompressData(head,compression);
+		WriteCharToFile(uncompressed,uncompressedData);
 		fclose(in);
 		fclose(out);
 	}
@@ -132,8 +144,9 @@ int main(int argc, char **argv) {
 		fwrite(&tmpA,1,1,out);
 		tmpA=0;
 		fwrite(&tmpA,1,1,out);
-		fwrite(&tmpA,1,1,out); //zapisanie 4 startowych bajtów
-		
+		fwrite(&tmpA,1,1,out); //zapisanie 5 startowych bajtów
+		fwrite(&tmpA,1,1,out);
+
 		dynamicArray *nodes = makeDynamicArray(8);
 		key_type *keys;
 
@@ -151,6 +164,7 @@ int main(int argc, char **argv) {
 				SetWordSize(8);
 
 				InitFile(out);
+				SetReadDecode(xordPassword);
 				WriteTreeFillBite(nodes->t[nodes->n-1]);
 				compressToFile_8_16(in,out,1,keys);
 				fclose(in);

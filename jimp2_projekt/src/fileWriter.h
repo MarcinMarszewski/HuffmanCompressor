@@ -12,4 +12,6 @@ void InitFile(FILE *in);
 
 int GetWriteBitwiseCount();
 
+void SetDecode(char dec);
+
 #endif

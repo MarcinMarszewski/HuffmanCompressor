@@ -5,6 +5,7 @@ unsigned char cache;
 long long int totalBitCount;
 int bitwiseCount;
 FILE * write;
+char decode;
 
 int WriteIntWrap(int count, int in)
 {
@@ -34,6 +35,7 @@ int WriteCharToFile(int count, unsigned char in)
 		if(bitwiseCount==8)
 		{
 			bitwiseCount=0;
+			cache = cache^decode;
 			fwrite(&cache,1,1,write);
 		}
 	}
@@ -47,9 +49,15 @@ int GetWriteBitwiseCount()
 
 void InitFile(FILE * file)
 {
+	decode=0;
 	totalBitCount=0;
 	bitwiseCount=0;
 	write = file;
 	cache= '\0';
+}
+
+void SetDecode(char dec)
+{
+	decode=dec;
 }
 

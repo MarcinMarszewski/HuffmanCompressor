@@ -3,7 +3,6 @@
 int wordSize;
 unsigned char charTmp;
 unsigned int intTmp;
-
 int WriteTree(node_t* head)
 {
 	if(head->left==NULL)

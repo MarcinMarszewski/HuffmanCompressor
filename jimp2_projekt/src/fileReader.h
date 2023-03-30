@@ -14,6 +14,8 @@ char CanRead();
 
 int InitReadFile(FILE * file);
 
+void SetReadDecode(char dec);
+
 void SetEmptyEndBits(char ends);
 
 #endif // FILEREADER
