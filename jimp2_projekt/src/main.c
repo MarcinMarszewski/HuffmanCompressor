@@ -22,12 +22,13 @@
 
 int main(int argc, char **argv) {
 
-	/*
-	int option, compression, i;
+	int option, compression=8, i;
 	FILE* in;
 	FILE *out;
-	char* fileName;
+	char* fileName  = malloc(100*sizeof(*fileName ));
+	char* fileName2 = malloc(100*sizeof(*fileName2));
 	char xordPassword=0,isCompressed=0,isProtected=0,xordFileCheck,compressionData,tmpA,tmpB;
+	printf("Ustawienie zmiennych\n");
 
 	while((option=getopt(argc,argv,"f:o:p:h"))!=-1)
 	{
@@ -35,8 +36,8 @@ int main(int argc, char **argv) {
 		{
 			case 'f':
 				in = fopen(optarg,"rb");
-				fileName= malloc((strlen(optarg)+10)*sizeof(*fileName));
 				strcpy(fileName,optarg);
+				strcpy(fileName2,optarg);
 				if(in==NULL) 
 				{
 					fprintf(stderr,"Nie udało się otworzyć pliku %s\n",optarg);
@@ -74,14 +75,14 @@ int main(int argc, char **argv) {
 		return -3;
 	}
 
-	if(tmpA=20)
+	if(tmpA==20)
 	{
-		if(tmpB='P')
+		if(tmpB=='P')
 		{
 			isProtected=1;
 			isCompressed=1;
 		}
-		else if(tmpB='O')
+		else if(tmpB=='O')
 			isCompressed=1;
 	}
 	
@@ -90,20 +91,39 @@ int main(int argc, char **argv) {
 
 	if(isProtected==1)
 	{
-		//dekompresja z hasłem
+		printf("Ustawienie wartości hasła\n"); //do zrobienia
 	
 	}
-	else if(isCompressed==1)
+	if(isCompressed==1)
 	{
+		printf("Dekompresja bez hasła\n");
 		//dekompresja bez hasła
+		node_t *head = malloc(sizeof(*head));
+		strcat(fileName2,".decomp");
+		out= fopen(fileName2,"wb");
+
+		//sprawdzenie stopnia kompresji
+		compression=8;
+
+		SetWordSize(compression);
+
+		InitReadFile(in);
+		InitFile(out);
+		SetEmptyEndBits(0); //sprawdzenie z metadanych
+		
+		ReadTreeFillBite(head);
+		DecompressData(head,8);
+
+		fclose(in);
+		fclose(out);
 	}
 	else
 	{
+		printf("Kompresja\n");
 		fclose(in);
 		in = fopen(fileName,"rb");
-
-		strcat(fileName,".squish");
-		out = fopen(fileName,"wb");
+		strcat(fileName2,".squish");
+		out = fopen(fileName2,"wb");
 		
 		tmpA=20;
 		fwrite(&tmpA,1,1,out);
@@ -114,11 +134,55 @@ int main(int argc, char **argv) {
 		fwrite(&tmpA,1,1,out);
 		fwrite(&tmpA,1,1,out); //zapisanie 4 startowych bajtów
 		
+		dynamicArray *nodes = makeDynamicArray(8);
+		key_type *keys;
+
+		switch(compression)
+		{
+			case 8:
+				printf("kompresja 8");
+				leavesMaker_8_16(in,nodes,1);
+				fclose(in);
+				in = fopen(fileName,"rb");
+				makeTree(nodes);
+
+				keys = InitKeyArray(256);
+				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
+				SetWordSize(8);
+
+				InitFile(out);
+				WriteTreeFillBite(nodes->t[nodes->n-1]);
+				compressToFile_8_16(in,out,1,keys);
+				fclose(in);
+				fclose(out);
+			break;
+
+			case 12:
+				
+			break;
+
+			case 16:
+				leavesMaker_8_16(in,nodes,2);
+				fclose(in);
+				in = fopen(fileName,"rb");
+				makeTree(nodes);
+				
+				keys = InitKeyArray(65536);
+				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
+				SetWordSize(16);
+
+				InitFile(out);
+				WriteTreeFillBite(nodes->t[nodes->n-1]);
+				compressToFile_8_16(in,out,1,keys);
+				fclose(in);
+				fclose(out);
+			break;
+		} //kompresja
+
 		
-		//kompresja
+		//zapisywanie metadanych
 	}
 
-	*/
 		/*
 
 		FILE* in = fopen(argv[1],"rb");
@@ -128,8 +192,9 @@ int main(int argc, char **argv) {
 		{
 			printf("%d\n",TakeMultibitFromFile(8));
 		}*/
-
 	
+	/*
+
 	if(atoi(argv[1])==0)	//0 - kompresja
 	{	
 	FILE *in = argc > 2 ?  fopen(argv[2], "rb") : stdin;
@@ -188,6 +253,6 @@ int main(int argc, char **argv) {
 	fclose(compressed);
 	fclose(decompressed);
 	}	
-
+	*/
 	return EXIT_SUCCESS;
 }
