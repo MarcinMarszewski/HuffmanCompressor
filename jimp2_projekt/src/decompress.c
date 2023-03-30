@@ -5,7 +5,7 @@ void DecompressData(node_t * head,int wordLength)
 	int i=0;
 	char temp;
 	node_t * nodeTemp=head;
-	while(i<10000)
+	while(CanRead()==1)
 	{
 		i++;
 		temp = TakeBitFromFile();

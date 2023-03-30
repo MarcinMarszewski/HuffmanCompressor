@@ -175,10 +175,10 @@ int main(int argc, char **argv) {
 	printf("File opened\n");
 	SetWordSize(8);
 
-	//SetEmptyEndBitCount(0);
 	InitReadFile(compressed);
 	InitFile(decompressed);
 	printf("Files initiated\n");
+	SetEmptyEndBits(0);
 		
 	ReadTreeFillBite(head);
 	printf("Tree Read\n");

@@ -10,12 +10,10 @@ char TakeBitFromFile(void);
 
 void FillBite();
 
+char CanRead();
+
 int InitReadFile(FILE * file);
-/*
-void SetEmptyEndBitCount(char s);
 
-int GetReadBitwiseCount();
+void SetEmptyEndBits(char ends);
 
-int ReadBit(char *t);
-*/
 #endif // FILEREADER

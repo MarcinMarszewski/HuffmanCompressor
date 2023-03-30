@@ -1,13 +1,12 @@
 #include "fileReader.h"
 
-int pointer;
 FILE * read;
-char tmp;
-
-//nie ma sensu
+char tmp, next;
+char canRead;
+char countTillEnd,leftover, pointer;
 
 //count: 1-8
-//zwraca ile bitow pobral
+//zwraca podaną liczbę bitów w intcie
 int TakeMultibitFromFile(int count)
 {
     	int out=0;
@@ -19,14 +18,18 @@ int TakeMultibitFromFile(int count)
 	}
 	return out;
 }
-//bierze bit, nie patrzy na koniec pliku
+
+//zwraca następny bit w plliku
 char TakeBitFromFile()
 {
 	if(pointer==8)
 	{
 		pointer=0;
-		fread(&tmp,1,1,read);
+		tmp=next;
+		if(fread(&next,1,1,read)==0)countTillEnd=8-leftover;
 	}
+	if(countTillEnd>0)countTillEnd--;
+	if(countTillEnd==0)canRead=0;
 	pointer++;
 	if(tmp<0)
 	{
@@ -39,40 +42,33 @@ char TakeBitFromFile()
 	return 0;
 }
 
+//przesuwa czytanie na następny bajt
 void FillBite()
 {
+	//while(pointer!=0&&pointer!=8)TakeBitFromFile();
 	pointer=8;
 }
 
-//0 means empty file
+//inicjuje plik do czytania
 int InitReadFile(FILE * file)
 {
+	countTillEnd=-1;
+	leftover=0;
+	canRead=1;
 	pointer=0;
 	read=file;
 	fread(&tmp,1,1,read);
-}
-/*
-void SetEmptyEndBitCount(char s)
-{
-    emptyEndBitCount = s;
+	fread(&next,1,1,read);
 }
 
-int GetReadBitwiseCount()
+//zwraca 1 jeśli można wczytać następny bit
+char CanRead()
 {
-	return bitPoint;
+	return canRead;
 }
 
-int ReadBit(char *n)
+//ustawia ile bitów w ostatnim bajcie nie zawiera informacji
+void SetEmptyEndBits(char ends)
 {
-	*n=0;
-	if(bitPoint==8)
-	{
-		fread(&taken,1,1,read);
-		bitPoint=0;
-	}
-	if(taken<0)*n=1;
-	else *n=0;
-	bitPoint++;
-	return 1;
+	leftover=ends;
 }
-*/
