@@ -7,10 +7,10 @@
 
 //MAKING LEAVES FROM FILE
 
-//8 and 16 bits
-void leavesMaker_8_16 (FILE *in, dynamicArray* nodes, int bytes ) {     //bytes - 1 for 8 bits, 2 for 16 bites
+//8 bits
+void leavesMaker_8 (FILE *in, dynamicArray* nodes) {     //bytes - 1 for 8 bits, 2 for 16 bites
     unsigned short x = 0;
-	while( fread(&x, 1, bytes, in ) == bytes){
+	while( fread(&x, 1, 1, in ) == 1){
 		int bylo = 0;
 		for(int i = 0; i < nodes->n; i++) {
 			if( nodes->t[i]->value == x ) {
@@ -24,32 +24,76 @@ void leavesMaker_8_16 (FILE *in, dynamicArray* nodes, int bytes ) {     //bytes 
 	}
 }
 
+//16 bits
+int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned short rest) {     //bytes - 1 for 8 bits, 2 for 16 bites
+	unsigned short x = 0;
+	unsigned short tmp = '\0';
+	int check = 2;
+	rest = 0;
+
+	while( check == 2 ){
+		x = 0;
+		check = 0;
+		tmp = '\0';
+		int bylo = 0;
+
+		if( fread(&x, 1, 1, in ) == 1 ) {
+			check++;
+			x = x << 8;
+		}
+		if( fread(&tmp, 1, 1, in ) == 1 ) {
+			check++;
+			x |= (tmp&255);
+		}
+		for(int i = 0; i < nodes->n; i++) {
+			if( nodes->t[i]->value == x ) {
+				bylo = 1;
+				nodes->t[i]->quantity++;
+				break;
+			}
+		}
+		if( bylo == 0 && check == 2 )
+			add( nodes, x );
+	}
+	if( check == 1) {
+			rest = x>>8;
+			printf("Reszta przy 16 bitach: %c\n", rest);
+			return 8;
+	} 
+	else if( check == 0 )
+		return 0;
+	
+}
+
 //12 bits
-void leavesMaker_12 (FILE *in, dynamicArray *nodes) {
+int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned short rest) {
 	unsigned short x1 = 0;
 	unsigned short x2 = 0;
 	unsigned char tmp = 0;
 	int check = 3;
+	rest = 0;
 
 	while(check == 3){
 		x1 = 0;
 		x2 = 0;
-		tmp = 0;
+		tmp = '\0';
 		check = 0;
 
-    	if( fread(&x1, 1, 1, in) == 1)
+    	if(fread(&x1, 1, 1, in) == 1){
 			check++;
-		x1 = x1<<8;
-		if( fread(&tmp, 1, 1, in) == 1)
+			x1 = x1<<8;
+		}
+		if(fread(&tmp, 1, 1, in) == 1){
 			check++;
-		x1 = x1 | (tmp&240);
-		x1 = x1>>4;
-		x2 = x2 | (tmp&15);
-		x2 = x2<<8;
-		if( fread(&tmp, 1, 1, in) == 1)
+			x1 = x1 | (tmp&240);
+			x1 = x1>>4;
+			x2 = x2 | (tmp&15);
+			x2 = x2<<8;
+		}
+		if(fread(&tmp, 1, 1, in) == 1){
 			check++;
-		x2 = x2 | tmp;
-
+			x2 = x2 | tmp;
+		}
 		int byloX1 = 0;
 		int byloX2 = 0;
 		for(int i = 0; i < nodes->n; i++) {
@@ -67,8 +111,21 @@ void leavesMaker_12 (FILE *in, dynamicArray *nodes) {
 			add( nodes, x1 );
 		if( (byloX2 == 0) && (check == 3) )
 			add( nodes, x2 );
-		
 	} 
+	if(check == 0) {
+		printf("Dlugosc reszty to 0 i wartosc to: %d\n", rest);
+		return 0;
+	}
+	else if(check == 1) {
+		rest = x1>>8;
+		printf("Dlugosc reszty to 8 i wartosc to: %d\n", rest);
+		return 8;
+	}
+	else if(check == 2) {
+		rest = (rest | tmp&15);
+		printf("Dlugosc reszty to 4 i wartosc to: %d\n", rest);
+		return 4;
+	}
 }
 
 //COMPRESSING DATA FROM FILE IN TO FILE OUT

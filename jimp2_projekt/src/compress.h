@@ -4,8 +4,9 @@
 #include "node.h"
 #include "key.h"
 
-void leavesMaker_8_16 (FILE *, dynamicArray *, int);
-void leavesMaker_12 (FILE *, dynamicArray *);
+void leavesMaker_8 (FILE *, dynamicArray *);
+int leavesMaker_16 (FILE *, dynamicArray *, unsigned short);
+int leavesMaker_12 (FILE *, dynamicArray *, unsigned short);
 void compressToFile_8_16(FILE *, FILE *, int, key_type *);
 void compressToFile_12(FILE *, FILE *, key_type *);
 
