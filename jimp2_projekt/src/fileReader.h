@@ -1,21 +1,21 @@
 #ifndef FILEREADER
 #define FILEREADER
 
-#include "fileWriter.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-int TakeMultibitFromFile(int count,unsigned int * out);
+int TakeMultibitFromFile(int count);
 
-//powinno uwzglêdniaæ dopisane bity w ostatnim bajcie
-//1-pobrano bit
-//0-brak bitów
-int TakeBitFromFile(unsigned char *out);
+char TakeBitFromFile(void);
+
+void FillBite();
+
+char CanRead();
 
 int InitReadFile(FILE * file);
 
-void SetEmptyEndBitCount(unsigned char s);
+void SetReadDecode(char dec);
 
-int GetReadBitwiseCount();
+void SetEmptyEndBits(char ends);
 
 #endif // FILEREADER

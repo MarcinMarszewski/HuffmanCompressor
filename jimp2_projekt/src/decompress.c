@@ -3,10 +3,12 @@
 void DecompressData(node_t * head,int wordLength)
 {
 	int i=0;
-	unsigned char temp;
+	char temp;
 	node_t * nodeTemp=head;
-	while(TakeBitFromFile(&temp)==1)
+	while(CanRead()==1)
 	{
+		i++;
+		temp = TakeBitFromFile();
 		//i++;
 		//printf("bit taken: %d\n",i);
 		if(temp==0)
