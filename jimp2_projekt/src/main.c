@@ -149,12 +149,13 @@ int main(int argc, char **argv) {
 
 		dynamicArray *nodes = makeDynamicArray(8);
 		key_type *keys;
+		unsigned char tymczasowa_zmienna_przechowujaca_reszte;
 
 		switch(compression)
 		{
 			case 8:
 				printf("kompresja 8");
-				leavesMaker_8_16(in,nodes,1);
+				leavesMaker_8(in,nodes);
 				fclose(in);
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
@@ -172,11 +173,24 @@ int main(int argc, char **argv) {
 			break;
 
 			case 12:
+				leavesMaker_12(in, nodes, tymczasowa_zmienna_przechowujaca_reszte);
+				fclose(in);
+				in = fopen(fileName,"rb");
+				makeTree(nodes);
 				
+				keys = InitKeyArray(4096);
+				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
+				SetWordSize(12);
+
+				InitFile(out);
+				WriteTreeFillBite(nodes->t[nodes->n-1]);
+				compressToFile_12(in,out,keys);
+				fclose(in);
+				fclose(out);
 			break;
 
 			case 16:
-				leavesMaker_8_16(in,nodes,2);
+				leavesMaker_16(in,nodes, tymczasowa_zmienna_przechowujaca_reszte);
 				fclose(in);
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
@@ -187,7 +201,7 @@ int main(int argc, char **argv) {
 
 				InitFile(out);
 				WriteTreeFillBite(nodes->t[nodes->n-1]);
-				compressToFile_8_16(in,out,1,keys);
+				compressToFile_8_16(in,out,2,keys);
 				fclose(in);
 				fclose(out);
 			break;
