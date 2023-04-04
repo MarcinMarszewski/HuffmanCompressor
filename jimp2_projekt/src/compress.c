@@ -131,7 +131,7 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned short rest) {
 //COMPRESSING DATA FROM FILE IN TO FILE OUT
 
 //8 and 16 bits
-void compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
+int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
 
     unsigned short x = 0;
     unsigned char *buff = calloc( 64, sizeof( *buff ) );
@@ -154,12 +154,17 @@ void compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
                 buff[i] = buff[i+8];
         } 
 	}
+	int i = 0;
+	while( buff[i] != '\0' )
+		i++;
 
     free(buff);
+	printf("Reszta z kompresji: %d\n", i);
+	return i;
 }
 
 //12 bits
-void compressToFile_12(FILE *in, FILE *out, key_type *keys) {
+int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
    
     unsigned short x1 = 0;
 	unsigned short x2 = 0;
@@ -205,6 +210,12 @@ void compressToFile_12(FILE *in, FILE *out, key_type *keys) {
             for(int i=0; i<56; i++)
                 buff[i] = buff[i+8];
         }
-	} 
+	}
+
+	int i = 0;
+	while( buff[i] != '\0' )
+		i++;
     free(buff);
+	printf("Reszta z kompresji: %d\n", i);
+	return i;
 }

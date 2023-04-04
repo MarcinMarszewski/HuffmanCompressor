@@ -15,6 +15,7 @@
 //-1 nie udało się otworzyć pliku
 //-2 nieodpowiedni stopień kompresji
 //-3 plik z 1 lub mniej bajtów
+//-4 Plik uszkodzony lub XOR-owany bajt niepoprawny
 //
 // 3 wywołanie pomocy
 //EXIT_SUCCESS program wykonany w pełni
@@ -27,7 +28,7 @@ int main(int argc, char **argv) {
 	FILE *out;
 	char* fileName  = malloc(100*sizeof(*fileName ));
 	char* fileName2 = malloc(100*sizeof(*fileName2));
-	char xordPassword=0,isCompressed=0,isProtected=0,compression=8,uncompressed=0,leftover=0,xordFileCheck,compressionData,tmpA,tmpB;
+	char xordPassword=0,isCompressed=0,isProtected=0,compression=8,uncompressed=0,leftover=0,xordFileCheck=0,compressionData,tmpA,tmpB;
 	unsigned char uncompressedData;
 	printf("Ustawienie zmiennych\n");
 	
@@ -128,9 +129,28 @@ int main(int argc, char **argv) {
 		WriteCharToFile(uncompressed,uncompressedData);
 		fclose(in);
 		fclose(out);
+
+		printf("XOR-owanie po dekompresji\n");
+		in = fopen(fileName2, "rb");
+		while(fread(&tmpB, 1, 1, in) == 1)
+			xordFileCheck ^= tmpB;
+		fclose(in);
+		if(xordFileCheck != 0){
+			printf("Plik uszkodzony!\n");
+			return -4;
+		}
+		else
+			printf("Plik nieuszkodzony!\n");
+
 	}
 	else
 	{
+		printf("XOR-owanie przed kompresja\n");
+		in = fopen(fileName, "rb");
+		xordFileCheck = 0;
+		while(fread(&tmpB, 1, 1, in) == 1)
+			xordFileCheck ^= tmpB;
+
 		printf("Kompresja\n");
 		fclose(in);
 		in = fopen(fileName,"rb");
@@ -144,7 +164,7 @@ int main(int argc, char **argv) {
 		fwrite(&tmpA,1,1,out);
 		tmpA=0;
 		fwrite(&tmpA,1,1,out);
-		fwrite(&tmpA,1,1,out); //zapisanie 5 startowych bajtów
+		fwrite(&xordFileCheck,1,1,out); //zapisanie 5 startowych bajtów
 		fwrite(&tmpA,1,1,out);
 
 		dynamicArray *nodes = makeDynamicArray(8);
@@ -154,7 +174,7 @@ int main(int argc, char **argv) {
 		switch(compression)
 		{
 			case 8:
-				printf("kompresja 8");
+				printf("kompresja 8\n");
 				leavesMaker_8(in,nodes);
 				fclose(in);
 				in = fopen(fileName,"rb");
@@ -207,7 +227,8 @@ int main(int argc, char **argv) {
 			break;
 		} //kompresja
 
-		
+
+
 		//zapisywanie metadanych
 	}
 
