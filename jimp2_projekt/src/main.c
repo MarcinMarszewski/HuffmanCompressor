@@ -31,24 +31,26 @@ int main(int argc, char **argv) {
 	char xordPassword=0,isCompressed=0,isProtected=0,compression=8,uncompressed=0,leftover=0,xordFileCheck=0,compressionData,tmpA,tmpB;
 	unsigned char uncompressedData;
 	printf("Ustawienie zmiennych\n");
-	
+
 	//xordPassword=17;//tymczasowe testy
 
-	while((option=getopt(argc,argv,"f:o:p:h"))!=-1)
+	while((option=getopt(argc,argv,"s:f:o:p:h"))!=-1)
 	{
 		switch(option)
 		{
+			case 's':
+				strcpy(fileName2,optarg);
+				break;
 			case 'f':
 				in = fopen(optarg,"rb");
 				strcpy(fileName,optarg);
-				strcpy(fileName2,optarg);
 				break;
 
 			case 'o':
 				compression = atoi(optarg);
 				if(compression!=8&&compression!=12&&compression!=16)
 				{
-					fprintf(stderr,"Niedopowiednia długość słowa kompresji:%d\nWybierz z:8,12,16\n",compression);
+					fprintf(stderr,"Niedopowiednia dĹ‚ugoĹ›Ä‡ sĹ‚owa kompresji:%d\nWybierz z:8,12,16\n",compression);
 					return -2;
 				}
 				break;
@@ -58,7 +60,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'h':
-				fprintf(stdout,"Pomoc w obsłudze kompresora:\n");
+				fprintf(stdout,"Pomoc w obsĹ‚udze kompresora:\n");
 				return 3;
 				break;
 
@@ -68,12 +70,19 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	if(strcmp(fileName,fileName2)==0)
+	{
+		printf("%s %s\n",fileName,fileName2);
+		fprintf(stderr,"Plik wejĹ›ciowy i wyjĹ›ciowy o takiej samej nazwie\n");
+		return -5;
+	}
+
 	if(in==NULL)
 	{
 		fprintf(stderr,"Nie udało się otworzyć pliku %s\n",fileName);
 		return-1;
 	}
-	
+
 	if(fread(&tmpA,1,1,in)==0||fread(&tmpB,1,1,in)==0)
 	{
 		fprintf(stderr,"Plik zawiera 1 lub mniej bajtów\n");
@@ -90,15 +99,15 @@ int main(int argc, char **argv) {
 		else if(tmpB=='O')
 			isCompressed=1;
 	}
-	
+
 	fread(&compressionData,1,1,in);
-	fread(&xordFileCheck,1,1,in);	//wczytanie pierwszych 4 bajtów metadanych
+	fread(&xordFileCheck,1,1,in);	//wczytanie pierwszych 5 bajtów metadanych
 	fread(&uncompressedData,1,1,in);
 
 	if(isProtected==1)
 	{
 		printf("Ustawienie wartości hasła\n");
-	
+
 	}
 	if(isCompressed==1)
 	{
@@ -112,9 +121,12 @@ int main(int argc, char **argv) {
 
 
 		printf("Dekompresja\n");
-
+		if(strlen(fileName2)==0)
+		{
+			strcpy(fileName2,fileName);
+			strcat(fileName2,".decomp");
+		}
 		node_t *head = malloc(sizeof(*head));
-		strcat(fileName2,".decomp");
 		out= fopen(fileName2,"wb");
 
 		SetWordSize(compression);
@@ -123,7 +135,7 @@ int main(int argc, char **argv) {
 		InitFile(out);
 		SetEmptyEndBits(leftover);
 		SetDecode(xordPassword);
-		
+
 		ReadTreeFillBite(head);
 		DecompressData(head,compression);
 		WriteCharToFile(uncompressed,uncompressedData);
@@ -154,9 +166,15 @@ int main(int argc, char **argv) {
 		printf("Kompresja\n");
 		fclose(in);
 		in = fopen(fileName,"rb");
-		strcat(fileName2,".squish");
+		if(strlen(fileName2)==2)
+		{
+			strcpy(fileName2,fileName);
+			strcat(fileName2,".squish");
+		}
+
 		out = fopen(fileName2,"wb");
-		
+
+
 		tmpA=20;
 		fwrite(&tmpA,1,1,out);
 		if(xordPassword==0)tmpA='O';
@@ -197,7 +215,7 @@ int main(int argc, char **argv) {
 				fclose(in);
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
-				
+
 				keys = InitKeyArray(4096);
 				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
 				SetWordSize(12);
@@ -214,7 +232,7 @@ int main(int argc, char **argv) {
 				fclose(in);
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
-				
+
 				keys = InitKeyArray(65536);
 				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
 				SetWordSize(16);
@@ -241,11 +259,11 @@ int main(int argc, char **argv) {
 		{
 			printf("%d\n",TakeMultibitFromFile(8));
 		}*/
-	
+
 	/*
 
 	if(atoi(argv[1])==0)	//0 - kompresja
-	{	
+	{
 	FILE *in = argc > 2 ?  fopen(argv[2], "rb") : stdin;
 	FILE *compressed = argc > 3 ? fopen(argv[3],"wb") : stdout;
 
@@ -262,11 +280,11 @@ int main(int argc, char **argv) {
 	in = fopen(argv[2],"rb");
 
 	makeTree( nodes );
-	
+
 	key_type *keys;
 	keys = InitKeyArray(256);  //65536
 	AssignKeys(*nodes->t[nodes->n -1], keys,0,0);
-	
+
 	SetWordSize(8);
 
 	InitFile(compressed);
@@ -293,15 +311,15 @@ int main(int argc, char **argv) {
 	InitFile(decompressed);
 	printf("Files initiated\n");
 	SetEmptyEndBits(0);
-		
+
 	ReadTreeFillBite(head);
 	printf("Tree Read\n");
 	DecompressData(head,8);
 	printf("Data decompressed\n");
-		
+
 	fclose(compressed);
 	fclose(decompressed);
-	}	
+	}
 	*/
 	return EXIT_SUCCESS;
 }
