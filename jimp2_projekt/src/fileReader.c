@@ -34,11 +34,9 @@ char TakeBitFromFile()
 	pointer++;
 	if(tmp<0)
 	{
-		printf("1");
 		tmp<<=1;
 		return 1;
 	}
-	printf("0");
 	tmp<<=1;
 	return 0;
 }

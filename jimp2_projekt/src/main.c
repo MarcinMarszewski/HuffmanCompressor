@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 				compression = atoi(optarg);
 				if(compression!=8&&compression!=12&&compression!=16)
 				{
-					fprintf(stderr,"Niedopowiednia długość słowa kompresji:%d\nWybierz z:8,12,16\n",compression);
+					fprintf(stderr,"Niedopowiednia dĹ‚ugoĹ›Ä‡ sĹ‚owa kompresji:%d\nWybierz z:8,12,16\n",compression);
 					return -2;
 				}
 				break;
@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'h':
-				fprintf(stdout,"Pomoc w obsłudze kompresora:\n");
+				fprintf(stdout,"Pomoc w obsĹ‚udze kompresora:\n");
 				return 3;
 				break;
 
@@ -73,7 +73,11 @@ int main(int argc, char **argv) {
 	if(strcmp(fileName,fileName2)==0)
 	{
 		printf("%s %s\n",fileName,fileName2);
+<<<<<<< HEAD
 		fprintf(stderr,"Plik wejściowy i wyjściowy o takiej samej nazwie\n");
+=======
+		fprintf(stderr,"Plik wejĹ›ciowy i wyjĹ›ciowy o takiej samej nazwie\n");
+>>>>>>> a2b1cee92110bf5d79493c19e9d9bb3ac8ed76b1
 		return -5;
 	}
 
