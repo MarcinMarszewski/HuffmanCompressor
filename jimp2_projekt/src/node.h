@@ -28,5 +28,6 @@ void add( dynamicArray *, unsigned short );
 void combineNodes( dynamicArray *, node_t *, node_t * );
 
 void makeTree( dynamicArray * );
+void freeDynamicArrray( dynamicArray *);
 
 #endif // NODE

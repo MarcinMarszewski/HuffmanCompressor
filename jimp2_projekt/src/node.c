@@ -80,4 +80,17 @@ void makeTree( dynamicArray *da ) {
 	}
 }
 
+void freeDynamicArray(dynamicArray *da){
+	for(int i=0; i<da->size; i++) {
+		da->t[i]->left = NULL;
+		da->t[i]->right = NULL;
+		da->t[i]->upper = NULL;
+		free(da->t[i]);
+	}
+	free(da->t);
+	da->n = 0;
+	da->size = 0;
+	free(da);
+}
+
 			
