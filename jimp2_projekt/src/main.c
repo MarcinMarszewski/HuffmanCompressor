@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 				compression = atoi(optarg);
 				if(compression!=8&&compression!=12&&compression!=16)
 				{
-					fprintf(stderr,"Niedopowiednia dĹ‚ugoĹ›Ä‡ sĹ‚owa kompresji:%d\nWybierz z:8,12,16\n",compression);
+					fprintf(stderr,"Niedopowiednia długość słowa kompresji:%d\nWybierz z:8,12,16\n",compression);
 					return -2;
 				}
 				break;
@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'h':
-				fprintf(stdout,"Pomoc w obsĹ‚udze kompresora:\n");
+				fprintf(stdout,"Pomoc w obsłudze kompresora:\n");
 				return 3;
 				break;
 
@@ -73,11 +73,7 @@ int main(int argc, char **argv) {
 	if(strcmp(fileName,fileName2)==0)
 	{
 		printf("%s %s\n",fileName,fileName2);
-<<<<<<< HEAD
 		fprintf(stderr,"Plik wejściowy i wyjściowy o takiej samej nazwie\n");
-=======
-		fprintf(stderr,"Plik wejĹ›ciowy i wyjĹ›ciowy o takiej samej nazwie\n");
->>>>>>> a2b1cee92110bf5d79493c19e9d9bb3ac8ed76b1
 		return -5;
 	}
 
@@ -168,19 +164,20 @@ int main(int argc, char **argv) {
 			xordFileCheck ^= tmpB;
 
 		printf("Kompresja\n");
+
 		fclose(in);
+	
 		in = fopen(fileName,"rb");
-		if(strlen(fileName2)==2)
+		if(strlen(fileName2)==0)
 		{
 			strcpy(fileName2,fileName);
 			strcat(fileName2,".squish");
 		}
 
 		out = fopen(fileName2,"wb");
-
-
 		tmpA=20;
-		fwrite(&tmpA,1,1,out);
+		
+		fwrite(&tmpA,1,1,out); //TUTAJ SEG FAULT
 		if(xordPassword==0)tmpA='O';
 		else tmpA='P';
 		fwrite(&tmpA,1,1,out);
@@ -188,7 +185,6 @@ int main(int argc, char **argv) {
 		fwrite(&tmpA,1,1,out);
 		fwrite(&xordFileCheck,1,1,out); //zapisanie 5 startowych bajtów
 		fwrite(&tmpA,1,1,out);
-
 		dynamicArray *nodes = makeDynamicArray(8);
 		key_type *keys;
 		unsigned char tymczasowa_zmienna_przechowujaca_reszte;
@@ -252,6 +248,7 @@ int main(int argc, char **argv) {
 
 
 		//zapisywanie metadanych
+		freeDynamicArray(nodes);
 	}
 
 		/*
