@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <arpa/inet.h> 
 
 #include "key.h"
 #include "compress.h"
@@ -25,26 +26,28 @@ void leavesMaker_8 (FILE *in, dynamicArray* nodes) {     //bytes - 1 for 8 bits,
 }
 
 //16 bits
-int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned short rest) {     //bytes - 1 for 8 bits, 2 for 16 bites
+int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned short rest) {     
+	
 	unsigned short x = 0;
 	unsigned short tmp = '\0';
 	int check = 2;
+	int bylo;
 	rest = 0;
 
 	while( check == 2 ){
 		x = 0;
 		check = 0;
 		tmp = '\0';
-		int bylo = 0;
 
 		if( fread(&x, 1, 1, in ) == 1 ) {
 			check++;
 			x = x << 8;
 		}
-		if( fread(&tmp, 1, 1, in ) == 1 ) {
+		if( fread(&tmp, 1, 1, in ) == 1 ) { 
 			check++;
 			x |= (tmp&255);
 		}
+		bylo = 0;
 		for(int i = 0; i < nodes->n; i++) {
 			if( nodes->t[i]->value == x ) {
 				bylo = 1;
@@ -52,16 +55,20 @@ int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned short rest) {     //
 				break;
 			}
 		}
+		
 		if( bylo == 0 && check == 2 )
 			add( nodes, x );
+			
 	}
 	if( check == 1) {
 			rest = x>>8;
-			printf("Reszta przy 16 bitach: %c\n", rest);
+			printf("Dlugosc reszty to 8 i wartosc to: %c\n", rest);
 			return 8;
 	} 
-	else if( check == 0 )
+	else if( check == 0 ){
+		printf("Dlugosc reszty to 0 i wartosc to: %c\n", rest);
 		return 0;
+	}
 	
 }
 
@@ -69,6 +76,8 @@ int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned short rest) {     //
 int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned short rest) {
 	unsigned short x1 = 0;
 	unsigned short x2 = 0;
+	int byloX1;
+	int byloX2;
 	unsigned char tmp = 0;
 	int check = 3;
 	rest = 0;
@@ -94,8 +103,8 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned short rest) {
 			check++;
 			x2 = x2 | tmp;
 		}
-		int byloX1 = 0;
-		int byloX2 = 0;
+		byloX1 = 0;
+		byloX2 = 0;
 		for(int i = 0; i < nodes->n; i++) {
 			if( (nodes->t[i]->value == x1) && (check >=2) ) {
 				byloX1 = 1;
@@ -134,12 +143,13 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned short rest) {
 int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
 
     unsigned short x = 0;
-    unsigned char *buff = calloc( 64, sizeof( *buff ) );
-    unsigned char y = 0;
+    char *buff = calloc( 64, sizeof( *buff ) );
+    unsigned y = 0;
 
     while( fread(&x, 1, bytes, in ) == bytes){
+		if(bytes == 2)
+			x = ntohs(x);    //zamienia bajty w shortcie kolejnoscia
 		strcat(buff, KeyToCode( keys[x] ) );
-
         while( buff[7] != '\0' ){
 
             for(int i=7; i>=0; i--) {
