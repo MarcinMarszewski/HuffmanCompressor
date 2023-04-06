@@ -73,11 +73,7 @@ int main(int argc, char **argv) {
 	if(strcmp(fileName,fileName2)==0)
 	{
 		printf("%s %s\n",fileName,fileName2);
-<<<<<<< HEAD
-		fprintf(stderr,"Plik wejściowy i wyjściowy o takiej samej nazwie\n");
-=======
 		fprintf(stderr,"Plik wejĹ›ciowy i wyjĹ›ciowy o takiej samej nazwie\n");
->>>>>>> a2b1cee92110bf5d79493c19e9d9bb3ac8ed76b1
 		return -5;
 	}
 
@@ -107,7 +103,7 @@ int main(int argc, char **argv) {
 	fread(&compressionData,1,1,in);
 	fread(&xordFileCheck,1,1,in);	//wczytanie pierwszych 5 bajtów metadanych
 	fread(&uncompressedData,1,1,in);
-
+	printf("dekompresja nieskompresowane: %d\n",uncompressedData);
 	if(isProtected==1)
 	{
 		printf("Ustawienie wartości hasła\n");
@@ -115,14 +111,15 @@ int main(int argc, char **argv) {
 	}
 	if(isCompressed==1)
 	{
-		/*  pozyskiwanie danych o kompresji
+		//  pozyskiwanie danych o kompresji
 		compression=(1+(compressionData%4))*4;
 		compressionData>>=2;
 		uncompressed=(compressionData%4)*4;
 		compressionData>>=2;
 		leftover=compressionData%8;
-		*/
-
+		
+		printf("compression:%d uncompressed:%d leftover:%d compressionData:%d\n",compression,uncompressed,leftover,compressionData);
+	
 
 		printf("Dekompresja\n");
 		if(strlen(fileName2)==0)
@@ -143,6 +140,7 @@ int main(int argc, char **argv) {
 		ReadTreeFillBite(head);
 		DecompressData(head,compression);
 		WriteCharToFile(uncompressed,uncompressedData);
+
 		fclose(in);
 		fclose(out);
 
@@ -153,7 +151,7 @@ int main(int argc, char **argv) {
 		fclose(in);
 		if(xordFileCheck != 0){
 			printf("Plik uszkodzony!\n");
-			return -4;
+			//return -4;
 		}
 		else
 			printf("Plik nieuszkodzony!\n");
@@ -178,7 +176,6 @@ int main(int argc, char **argv) {
 
 		out = fopen(fileName2,"wb");
 
-
 		tmpA=20;
 		fwrite(&tmpA,1,1,out);
 		if(xordPassword==0)tmpA='O';
@@ -191,9 +188,9 @@ int main(int argc, char **argv) {
 
 		dynamicArray *nodes = makeDynamicArray(8);
 		key_type *keys;
-		unsigned char tymczasowa_zmienna_przechowujaca_reszte;
+		unsigned char tempRest;
 
-		switch(compression)
+		switch(compression)//leftover uncompressed compression
 		{
 			case 8:
 				printf("kompresja 8\n");
@@ -209,13 +206,12 @@ int main(int argc, char **argv) {
 				InitFile(out);
 				SetReadDecode(xordPassword);
 				WriteTreeFillBite(nodes->t[nodes->n-1]);
-				compressToFile_8_16(in,out,1,keys);
+				leftover = 8-compressToFile_8_16(in,out,1,keys);
 				fclose(in);
-				fclose(out);
 			break;
 
 			case 12:
-				leavesMaker_12(in, nodes, tymczasowa_zmienna_przechowujaca_reszte);
+				uncompressed = leavesMaker_12(in, nodes, tempRest);
 				fclose(in);
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
@@ -226,13 +222,13 @@ int main(int argc, char **argv) {
 
 				InitFile(out);
 				WriteTreeFillBite(nodes->t[nodes->n-1]);
-				compressToFile_12(in,out,keys);
+				leftover = 8-compressToFile_12(in,out,keys);
+				leftover=0;//
 				fclose(in);
-				fclose(out);
 			break;
 
 			case 16:
-				leavesMaker_16(in,nodes, tymczasowa_zmienna_przechowujaca_reszte);
+				uncompressed = leavesMaker_16(in,nodes, tempRest);
 				fclose(in);
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
@@ -243,14 +239,25 @@ int main(int argc, char **argv) {
 
 				InitFile(out);
 				WriteTreeFillBite(nodes->t[nodes->n-1]);
-				compressToFile_8_16(in,out,2,keys);
+				leftover = 8-compressToFile_8_16(in,out,2,keys);
 				fclose(in);
-				fclose(out);
 			break;
 		} //kompresja
 
-
-
+		compressionData = 0;
+		compressionData+=leftover;
+		compressionData<<=2;
+		compressionData+=uncompressed/4;
+		compressionData<<=2;
+		compressionData+=(compression/4)-1;
+		printf("kompresja nieskompresowane: %d\n",tempRest);
+		
+		printf("compression:%d uncompressed:%d leftover:%d compressionData:%d \n",compression,uncompressed,leftover, compressionData);
+		fseek(out,2,SEEK_SET);
+		fwrite(&compressionData,1,1,out);
+		fseek(out,4,SEEK_SET);
+		fwrite(&tempRest,1,1,out);
+		fclose(out);
 		//zapisywanie metadanych
 	}
 
@@ -301,8 +308,7 @@ int main(int argc, char **argv) {
 	printf("Compressed\n");
 	}
 	else
-	{
-	node_t* head= malloc(sizeof(*head));
+
 	printf("malloced\n");
 	FILE *compressed = argc>2?fopen(argv[2],"rb"):stdin;
 	FILE *decompressed = argc>3?fopen(argv[3],"wb"):stdout;
