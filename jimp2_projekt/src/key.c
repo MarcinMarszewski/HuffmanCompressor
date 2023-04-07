@@ -1,12 +1,5 @@
 #include "key.h"
 
-//inicjuje tablice kluczy
-key_type *InitKeyArray(int len)
-{
-	key_type *keys = malloc( len * sizeof(*keys));
-	return keys;
-}
-
 //przetwarza drzewo w tablice kluczy
 void AssignKeys(node_t head, key_type *keys, int val, int len) // uzycie z val=0, len=0
 {

@@ -32,6 +32,7 @@ int ReadTree(node_t* head)
 	{
 		head->value=TakeMultibitFromFile(wordSize);
 		head->left=NULL;
+		head->right=NULL;
 	}
 }
 
