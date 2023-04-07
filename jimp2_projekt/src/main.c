@@ -157,6 +157,9 @@ int main(int argc, char **argv) {
 		SetReadDecode(0);
 		DecompressData(head,compression);
 		WriteCharToFile(uncompressed,uncompressedData);
+		
+		freeTree(head);
+		free(head);
 
 		fclose(in);
 		fclose(out);
@@ -199,7 +202,8 @@ int main(int argc, char **argv) {
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
 
-				keys = InitKeyArray(256);
+				//keys = InitKeyArray(256);
+				keys = malloc(256*sizeof(*keys));
 				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
 				SetWordSize(8);
 
@@ -217,7 +221,8 @@ int main(int argc, char **argv) {
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
 
-				keys = InitKeyArray(4096);
+				//keys = InitKeyArray(4096);
+				keys = malloc(4096*sizeof(*keys));
 				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
 				SetWordSize(12);
 
@@ -235,7 +240,8 @@ int main(int argc, char **argv) {
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
 
-				keys = InitKeyArray(65536);
+				//keys = InitKeyArray(65536);
+				keys = malloc(65536*sizeof(*keys));
 				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
 				SetWordSize(16);
 
@@ -262,6 +268,10 @@ int main(int argc, char **argv) {
 		fseek(out,4,SEEK_SET);
 		fwrite(&tempRest,1,1,out);
 		fclose(out);
+		freeDynamicArray(nodes);
+		free(nodes->t);
+		//free(nodes);
+		free(keys);
 
 		//XOR-owanie po kompresjii
 		in = fopen(fileName2, "rb");

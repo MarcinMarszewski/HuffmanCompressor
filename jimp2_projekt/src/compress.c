@@ -140,12 +140,16 @@ int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
     unsigned short x = 0;
     char *buff = calloc( 64, sizeof( *buff ) );
     unsigned char y = 0;
+    char* tmp;//
 
     while( fread(&x, 1, bytes, in ) == bytes){
 		if(bytes == 2)
 			x = ntohs(x);    //zamienia bajty w shortcie kolejnoscia
-		strcat(buff, KeyToCode( keys[x] ) );
-        while( buff[7] != '\0' ){
+		//strcat(buff, KeyToCode( keys[x] ) );
+        	tmp =KeyToCode(keys[x]);//
+		strcat(buff,tmp);//
+		free(tmp);
+		while( buff[7] != '\0' ){
 
             for(int i=7; i>=0; i--) {
                 if( buff[i] == '1')
@@ -182,7 +186,7 @@ int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
 	int check = 3;
     char *buff = calloc( 64, sizeof( *buff ) );
     unsigned char y = 0;
-
+    char* keyGot;
     while(check == 3){
 		x1 = 0;
 		x2 = 0;
@@ -202,11 +206,18 @@ int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
 			check++;
 		x2 = x2 | tmp;
 
-        if(check >= 2) 
-            strcat(buff, KeyToCode( keys[x1] ) );
-        if(check == 3)
-            strcat(buff, KeyToCode( keys[x2] ) );
-		
+        if(check >= 2){
+           // strcat(buff, KeyToCode( keys[x1] ) );
+		keyGot = KeyToCode(keys[x1]);
+		strcat(buff,keyGot);
+		free(keyGot);	
+	}
+        if(check == 3){
+           // strcat(buff, KeyToCode( keys[x2] ) );
+		keyGot = KeyToCode(keys[x2]);
+		strcat(buff,keyGot);
+		free(keyGot);
+	}
         while( buff[7] != '\0' ){
 
             for(int i=7; i>=0; i--) {
