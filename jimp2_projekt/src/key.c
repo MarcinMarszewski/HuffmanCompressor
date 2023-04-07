@@ -17,7 +17,6 @@ void AssignKeys(node_t head, key_type *keys, int val, int len) // uzycie z val=0
 	}
 	else
 	{
-		printf("quantity: %d  value: %d  val:%d  len:%d\n", head.quantity, head.value,val,len);
 		keys[head.value].value = val;
 		keys[head.value].length = len;
 	}
@@ -28,12 +27,11 @@ char* KeyToCode(key_type key)
 {
 	char *ret= calloc(key.length, sizeof(*ret));
 	int i;
+	
 	for(i = key.length-1;i>-1;i--)
 	{
 		if(key.value%2==0)
-		{
 			ret[i]='0';
-		}
 		else
 		{
 			ret[i]='1';
@@ -41,6 +39,7 @@ char* KeyToCode(key_type key)
 		}
 		key.value/=2;
 	}
+	
 	return ret;
 }
 
