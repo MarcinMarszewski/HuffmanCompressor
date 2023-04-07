@@ -17,9 +17,8 @@ Sprawdzenie integralności pliku    	      //1 bajt
 Słownik:
 //zapis rekurencyjny, prejście lewo->prawo (0->1)
 [informacja o węźle] <wartość węzła>
-00 - koniec słownika
-10 - liść
-01 - pusty węzeł
+0 węzeł pusty
+1 liść
 
 Dane:
 pominięta w kompresji określona niepasująca ilość bitów na początku
