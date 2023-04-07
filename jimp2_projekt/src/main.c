@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
 	}
 	if(isCompressed==1)
 	{
-		/*/XOR-owanie przed dekompresją
+		//XOR-owanie przed dekompresją
 		while(fread(&tmpB, 1, 1, in) == 1)
 			xordFileCheck ^= tmpB;
 		fclose(in);
@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
 			printf("Plik nieuszkodzony!\n");
 
 		in = fopen(fileName, "rb");
-		fseek(in, 5, SEEK_SET);*/
+		fseek(in, 5, SEEK_SET);
 		
 
 		//  pozyskiwanie danych o kompresji
@@ -257,7 +257,7 @@ int main(int argc, char **argv) {
 		fwrite(&tempRest,1,1,out);
 		fclose(out);
 
-		/*XOR-owanie po kompresjii
+		//XOR-owanie po kompresjii
 		in = fopen(fileName2, "rb");
 		fseek(in,5,SEEK_SET);
 		xordFileCheck = 0;
@@ -268,7 +268,7 @@ int main(int argc, char **argv) {
 		out = fopen(fileName2, "rb+");
 		fseek(out, 3, SEEK_SET);
 		fwrite(&xordFileCheck, 1, 1, out);
-		fclose(out);*/
+		fclose(out);
 
 
 		//zapisywanie metadanych
