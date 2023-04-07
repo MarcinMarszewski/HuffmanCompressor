@@ -268,11 +268,7 @@ int main(int argc, char **argv) {
 		fseek(out,4,SEEK_SET);
 		fwrite(&tempRest,1,1,out);
 		fclose(out);
-		freeDynamicArray(nodes);
-		free(nodes->t);
-		//free(nodes);
-		free(keys);
-
+		
 		//XOR-owanie po kompresjii
 		in = fopen(fileName2, "rb");
 		fseek(in,5,SEEK_SET);
@@ -287,6 +283,9 @@ int main(int argc, char **argv) {
 		fclose(out);
 
 		freeDynamicArray(nodes);
+		free(nodes->t);
+		free(nodes);
+		free(keys);
 	}
 
 	free(fileName);
