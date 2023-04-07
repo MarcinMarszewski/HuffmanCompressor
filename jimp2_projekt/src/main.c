@@ -23,13 +23,20 @@
 //
 //EXIT_SUCCESS program wykonany w pełni
 //
-
+void displayHelp(){
+	printf("Pomoc w obsludze programu:\n./a.out -f <plik_wejciowy>\n"
+	"Opcjonalnie:\n"
+	"-s <plik_wyjsciowy>\n"
+	"-o <stopien_kompresji>\n"
+	"-p <haslo>\n"
+	"-h - wyswietlenie pomocy\n");
+}
 int main(int argc, char **argv) {
 
 	int i, option;
 	FILE* in;
 	FILE *out;
-	char* fileName  = malloc(100*sizeof(*fileName ));
+	char* fileName  = malloc(100*sizeof(*fileName));
 	char* fileName2 = malloc(100*sizeof(*fileName2));
 	unsigned char xordPassword=0,isCompressed=0,compression=8,uncompressed=0,leftover=0,xordFileCheck=0,compressionData,tmpA,tmpB, uncompressedData;
 
@@ -45,6 +52,11 @@ int main(int argc, char **argv) {
 				strcpy(fileName,optarg);
 				break;
 
+			case 'h':
+				displayHelp();
+				return 3;
+				break;
+
 			case 'o':
 				compression = atoi(optarg);
 				break;
@@ -53,15 +65,14 @@ int main(int argc, char **argv) {
 				for(i=0;i<strlen(optarg);i++)xordPassword=xordPassword^optarg[i];
 				break;
 
-			case 'h':
-				fprintf(stdout,"Pomoc w obsłudze kompresora:\n");
-				return 3;
-				break;
-
 			case '?':
 				fprintf(stderr,"Nieznany argument: %c\n",optopt);
 				break;
 		}
+	}
+	if(strlen(fileName)==0){
+		displayHelp();
+		return 3;
 	}
 	
 	if(compression!=8&&compression!=12&&compression!=16)
@@ -76,7 +87,6 @@ int main(int argc, char **argv) {
 		fprintf(stderr,"Plik wejściowy i wyjściowy o takiej samej nazwie\n");
 		return -5;
 	}
-
 	if(in==NULL)
 	{
 		fprintf(stderr,"Nie udało się otworzyć pliku %s\n",fileName);
@@ -117,16 +127,13 @@ int main(int argc, char **argv) {
 			xordFileCheck ^= tmpB;
 		fclose(in);
 		if(xordFileCheck != 0){
-			printf("Skompresowany plik jest uszkodzony! - wartosc: %d\n", xordFileCheck);
+			fprintf(stderr, "Skompresowany plik jest uszkodzony! - wartosc: %d\n", xordFileCheck);
 			return -4;
 		}
-		else
-			printf("Plik nieuszkodzony!\n");
 
 		in = fopen(fileName, "rb");
 		fseek(in, 5, SEEK_SET);
 		
-
 		//  pozyskiwanie danych o kompresji
 		compression=(1+(compressionData%4))*4;
 		compressionData>>=2;
@@ -136,7 +143,7 @@ int main(int argc, char **argv) {
 		
 		printf("compression:%d uncompressed:%d leftover:%d compressionData:%d\n",compression,uncompressed,leftover,compressionData);
 	
-
+	
 		printf("Dekompresja\n");
 		if(strlen(fileName2)==0)
 		{

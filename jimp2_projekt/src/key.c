@@ -1,7 +1,7 @@
 #include "key.h"
 
 //przetwarza drzewo w tablice kluczy
-void AssignKeys(node_t head, key_type *keys, int val, int len) // uzycie z val=0, len=0
+void AssignKeys(node_t head, key_type *keys, long int val, int len) // uzycie z val=0, len=0
 {
 	if(head.left!=NULL) 
 	{
