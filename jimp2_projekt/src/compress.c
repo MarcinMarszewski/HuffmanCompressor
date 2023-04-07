@@ -144,7 +144,7 @@ int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
 
     unsigned short x = 0;
     char *buff = calloc( 64, sizeof( *buff ) );
-    unsigned y = 0;
+    unsigned char y = 0;
 
     while( fread(&x, 1, bytes, in ) == bytes){
 		if(bytes == 2)
@@ -167,6 +167,13 @@ int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
 	int i = 0;
 	while( buff[i] != '\0' )
 		i++;
+	
+	for(int j=i; j>=0; j--) {
+        if( buff[j] == '1')
+             y |= (1 << (7 - j));
+    }
+	//y<<=(8-i);
+	fwrite(&y, 1, 1, out);
 
     free(buff);
 	printf("Reszta z kompresji: %d\n", i);
@@ -225,6 +232,14 @@ int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
 	int i = 0;
 	while( buff[i] != '\0' )
 		i++;
+
+	for(int j=i; j>=0; j--) {
+        if( buff[j] == '1')
+             y |= (1 << (7 - j));
+    }
+	//y<<=(8-i);
+	fwrite(&y, 1, 1, out);
+
     free(buff);
 	printf("Reszta z kompresji: %d\n", i);
 	return i;

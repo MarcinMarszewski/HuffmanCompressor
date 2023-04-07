@@ -112,6 +112,21 @@ int main(int argc, char **argv) {
 	printf("dekompresja nieskompresowane: %d\n",uncompressedData);
 	if(isCompressed==1)
 	{
+		/*/XOR-owanie przed dekompresją
+		while(fread(&tmpB, 1, 1, in) == 1)
+			xordFileCheck ^= tmpB;
+		fclose(in);
+		if(xordFileCheck != 0){
+			printf("Skompresowany plik jest uszkodzony! - wartosc: %d\n", xordFileCheck);
+			return -4;
+		}
+		else
+			printf("Plik nieuszkodzony!\n");
+
+		in = fopen(fileName, "rb");
+		fseek(in, 5, SEEK_SET);*/
+		
+
 		//  pozyskiwanie danych o kompresji
 		compression=(1+(compressionData%4))*4;
 		compressionData>>=2;
@@ -147,27 +162,9 @@ int main(int argc, char **argv) {
 		fclose(in);
 		fclose(out);
 
-		printf("XOR-owanie po dekompresji\n");
-		in = fopen(fileName2, "rb");
-		while(fread(&tmpB, 1, 1, in) == 1)
-			xordFileCheck ^= tmpB;
-		fclose(in);
-		if(xordFileCheck != 0){
-			printf("Plik uszkodzony!\n");
-			//return -4;
-		}
-		else
-			printf("Plik nieuszkodzony!\n");
-
 	}
 	else
 	{
-		printf("XOR-owanie przed kompresja\n");
-		in = fopen(fileName, "rb");
-		xordFileCheck = 0;
-		while(fread(&tmpB, 1, 1, in) == 1)
-			xordFileCheck ^= tmpB;
-
 		printf("Kompresja\n");
 
 		fclose(in);
@@ -182,7 +179,7 @@ int main(int argc, char **argv) {
 		out = fopen(fileName2,"wb");
 		tmpA=20;
 		
-		fwrite(&tmpA,1,1,out); //TUTAJ SEG FAULT
+		fwrite(&tmpA,1,1,out); 
 		if(xordPassword==0)tmpA='O';
 		else tmpA='P';
 		fwrite(&tmpA,1,1,out);
@@ -267,6 +264,21 @@ int main(int argc, char **argv) {
 		fseek(out,4,SEEK_SET);
 		fwrite(&tempRest,1,1,out);
 		fclose(out);
+
+		/*XOR-owanie po kompresjii
+		in = fopen(fileName2, "rb");
+		fseek(in,5,SEEK_SET);
+		xordFileCheck = 0;
+		while(fread(&tmpB, 1, 1, out) == 1)
+			xordFileCheck ^= tmpB;
+		fclose(in);
+
+		out = fopen(fileName2, "rb+");
+		fseek(out, 3, SEEK_SET);
+		fwrite(&xordFileCheck, 1, 1, out);
+		fclose(out);*/
+
+
 		//zapisywanie metadanych
 		freeDynamicArray(nodes);
 	}
