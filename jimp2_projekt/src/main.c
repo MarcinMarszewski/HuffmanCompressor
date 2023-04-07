@@ -12,12 +12,15 @@
 #include "decompress.h"
 
 //kody zwrotów i błędów
-//-1 nie udało się otworzyć pliku
-//-2 nieodpowiedni stopień kompresji
-//-3 plik z 1 lub mniej bajtów
+//-1 Nie udało się otworzyć pliku
+//-2 Nieodpowiedni stopień kompresji
+//-3 Plik z 1 lub mniej bajtów
 //-4 Plik uszkodzony lub XOR-owany bajt niepoprawny
+//-5 
+//-6 Brak hasła
 //
-// 3 wywołanie pomocy
+// 3 Wywołanie pomocy
+//
 //EXIT_SUCCESS program wykonany w pełni
 //
 
@@ -28,11 +31,7 @@ int main(int argc, char **argv) {
 	FILE *out;
 	char* fileName  = malloc(100*sizeof(*fileName ));
 	char* fileName2 = malloc(100*sizeof(*fileName2));
-	char xordPassword=0,isCompressed=0,isProtected=0,compression=8,uncompressed=0,leftover=0,xordFileCheck=0,compressionData,tmpA,tmpB;
-	unsigned char uncompressedData;
-	printf("Ustawienie zmiennych\n");
-
-	//xordPassword=17;//tymczasowe testy
+	unsigned char xordPassword=0,isCompressed=0,compression=8,uncompressed=0,leftover=0,xordFileCheck=0,compressionData,tmpA,tmpB, uncompressedData;
 
 	while((option=getopt(argc,argv,"s:f:o:p:h"))!=-1)
 	{
@@ -48,11 +47,6 @@ int main(int argc, char **argv) {
 
 			case 'o':
 				compression = atoi(optarg);
-				if(compression!=8&&compression!=12&&compression!=16)
-				{
-					fprintf(stderr,"Niedopowiednia długość słowa kompresji:%d\nWybierz z:8,12,16\n",compression);
-					return -2;
-				}
 				break;
 
 			case 'p':
@@ -68,6 +62,12 @@ int main(int argc, char **argv) {
 				fprintf(stderr,"Nieznany argument: %c\n",optopt);
 				break;
 		}
+	}
+	
+	if(compression!=8&&compression!=12&&compression!=16)
+	{
+		fprintf(stderr,"Nieodpowiednia długość słowa kompresji:%d\nWybierz z:8,12,16\n",compression);
+		return-2;
 	}
 
 	if(strcmp(fileName,fileName2)==0)
@@ -93,22 +93,23 @@ int main(int argc, char **argv) {
 	{
 		if(tmpB=='P')
 		{
-			isProtected=1;
+			if(xordPassword==0)
+			{
+				fprintf(stderr,"Plik chroniony, należy podać hasło.\n");
+				return -6;
+			}
 			isCompressed=1;
 		}
 		else if(tmpB=='O')
 			isCompressed=1;
 	}
 
+	//Dokąd zrefaktoryzowane//
+	printf("Pass: %d\n",xordPassword);
 	fread(&compressionData,1,1,in);
 	fread(&xordFileCheck,1,1,in);	//wczytanie pierwszych 5 bajtów metadanych
 	fread(&uncompressedData,1,1,in);
 	printf("dekompresja nieskompresowane: %d\n",uncompressedData);
-	if(isProtected==1)
-	{
-		printf("Ustawienie wartości hasła\n");
-
-	}
 	if(isCompressed==1)
 	{
 		//  pozyskiwanie danych o kompresji
@@ -117,6 +118,7 @@ int main(int argc, char **argv) {
 		uncompressed=(compressionData%4)*4;
 		compressionData>>=2;
 		leftover=compressionData%8;
+		leftover=0;///////
 		
 		printf("compression:%d uncompressed:%d leftover:%d compressionData:%d\n",compression,uncompressed,leftover,compressionData);
 	
@@ -135,9 +137,10 @@ int main(int argc, char **argv) {
 		InitReadFile(in);
 		InitFile(out);
 		SetEmptyEndBits(leftover);
-		SetDecode(xordPassword);
+		SetReadDecode(xordPassword);
 
 		ReadTreeFillBite(head);
+		SetReadDecode(0);
 		DecompressData(head,compression);
 		WriteCharToFile(uncompressed,uncompressedData);
 
@@ -205,14 +208,15 @@ int main(int argc, char **argv) {
 				SetWordSize(8);
 
 				InitFile(out);
-				SetReadDecode(xordPassword);
+				SetDecode(xordPassword);
 				WriteTreeFillBite(nodes->t[nodes->n-1]);
+				SetDecode(0);
 				leftover = 8-compressToFile_8_16(in,out,1,keys);
 				fclose(in);
 			break;
 
 			case 12:
-				uncompressed = leavesMaker_12(in, nodes, tempRest);
+				uncompressed = leavesMaker_12(in, nodes, &tempRest);
 				fclose(in);
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
@@ -222,14 +226,16 @@ int main(int argc, char **argv) {
 				SetWordSize(12);
 
 				InitFile(out);
+				SetDecode(xordPassword);
 				WriteTreeFillBite(nodes->t[nodes->n-1]);
+				SetDecode(0);
 				leftover = 8-compressToFile_12(in,out,keys);
 				leftover=0;//
 				fclose(in);
 			break;
 
 			case 16:
-				uncompressed = leavesMaker_16(in,nodes, tempRest);
+				uncompressed = leavesMaker_16(in,nodes, &tempRest);
 				fclose(in);
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
@@ -239,7 +245,9 @@ int main(int argc, char **argv) {
 				SetWordSize(16);
 
 				InitFile(out);
+				SetDecode(xordPassword);
 				WriteTreeFillBite(nodes->t[nodes->n-1]);
+				SetDecode(0);
 				leftover = 8-compressToFile_8_16(in,out,2,keys);
 				fclose(in);
 			break;
@@ -263,75 +271,8 @@ int main(int argc, char **argv) {
 		freeDynamicArray(nodes);
 	}
 
-		/*
+	free(fileName);
+	free(fileName2);
 
-		FILE* in = fopen(argv[1],"rb");
-		InitReadFile(in);
-		int i;
-		for(i=0;i<10;i++)
-		{
-			printf("%d\n",TakeMultibitFromFile(8));
-		}*/
-
-	/*
-
-	if(atoi(argv[1])==0)	//0 - kompresja
-	{
-	FILE *in = argc > 2 ?  fopen(argv[2], "rb") : stdin;
-	FILE *compressed = argc > 3 ? fopen(argv[3],"wb") : stdout;
-
-	if(in == NULL) {
-		fprintf(stderr, "Error: Cannot open infile \"%s\"\n", argv[1]);
-		return EXIT_FAILURE;
-	}
-
-
-	dynamicArray *nodes = makeDynamicArray( 8 );
-
-	leavesMaker_8_16(in, nodes, 1);         	//tworzy tablice lisci dla 8 bitow
-	fclose(in);
-	in = fopen(argv[2],"rb");
-
-	makeTree( nodes );
-
-	key_type *keys;
-	keys = InitKeyArray(256);  //65536
-	AssignKeys(*nodes->t[nodes->n -1], keys,0,0);
-
-	SetWordSize(8);
-
-	InitFile(compressed);
-	WriteTreeFillBite(nodes->t[nodes->n-1]);
-
-	compressToFile_8_16(in,compressed,1,keys);
-
-	fclose(in);
-	fclose(compressed);
-	printf("Compressed\n");
-	}
-	else
-
-	printf("malloced\n");
-	FILE *compressed = argc>2?fopen(argv[2],"rb"):stdin;
-	FILE *decompressed = argc>3?fopen(argv[3],"wb"):stdout;
-
-
-	printf("File opened\n");
-	SetWordSize(8);
-
-	InitReadFile(compressed);
-	InitFile(decompressed);
-	printf("Files initiated\n");
-	SetEmptyEndBits(0);
-
-	ReadTreeFillBite(head);
-	printf("Tree Read\n");
-	DecompressData(head,8);
-	printf("Data decompressed\n");
-
-	fclose(compressed);
-	fclose(decompressed);
-	}
-	*/
 	return EXIT_SUCCESS;
 }

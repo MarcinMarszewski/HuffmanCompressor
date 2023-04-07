@@ -26,13 +26,13 @@ void leavesMaker_8 (FILE *in, dynamicArray* nodes) {     //bytes - 1 for 8 bits,
 }
 
 //16 bits
-int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned short rest) {     
+int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned char* rest) {     
 	
 	unsigned short x = 0;
 	unsigned short tmp = '\0';
 	int check = 2;
 	int bylo;
-	rest = 0;
+	*rest = 0;
 
 	while( check == 2 ){
 		x = 0;
@@ -61,26 +61,26 @@ int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned short rest) {
 			
 	}
 	if( check == 1) {
-			rest = x>>8;
-			printf("Dlugosc reszty to 8 i wartosc to: %c\n", rest);
+			*rest = x>>8;
+			printf("Dlugosc reszty to 8 i wartosc to: %c\n", *rest);
 			return 8;
 	} 
 	else if( check == 0 ){
-		printf("Dlugosc reszty to 0 i wartosc to: %c\n", rest);
+		printf("Dlugosc reszty to 0 i wartosc to: %c\n", *rest);
 		return 0;
 	}
 	
 }
 
 //12 bits
-int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned short rest) {
+int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest) {
 	unsigned short x1 = 0;
 	unsigned short x2 = 0;
 	int byloX1;
 	int byloX2;
 	unsigned char tmp = 0;
 	int check = 3;
-	rest = 0;
+	*rest = 0;
 
 	while(check == 3){
 		x1 = 0;
@@ -122,17 +122,17 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned short rest) {
 			add( nodes, x2 );
 	} 
 	if(check == 0) {
-		printf("Dlugosc reszty to 0 i wartosc to: %d\n", rest);
+		printf("Dlugosc reszty to 0 i wartosc to: %d\n", *rest);
 		return 0;
 	}
 	else if(check == 1) {
-		rest = x1>>8;
-		printf("Dlugosc reszty to 8 i wartosc to: %d\n", rest);
+		*rest = x1>>8;
+		printf("Dlugosc reszty to 8 i wartosc to: %d\n", *rest);
 		return 8;
 	}
 	else if(check == 2) {
-		rest = (rest | tmp&15);
-		printf("Dlugosc reszty to 4 i wartosc to: %d\n", rest);
+		*rest = (*rest | tmp&15);
+		printf("Dlugosc reszty to 4 i wartosc to: %d\n", *rest);
 		return 4;
 	}
 }

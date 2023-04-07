@@ -13,6 +13,7 @@ typedef struct key_type
 key_type *InitKeyArray(int len);
 
 void AssignKeys(node_t head, key_type *keys, int val, int len);
+
 char* KeyToCode(key_type key);
 
 #endif // KEY
