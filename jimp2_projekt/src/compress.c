@@ -172,7 +172,7 @@ int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
         if( buff[j] == '1')
              y |= (1 << (7 - j));
     }
-	y<<=(8-i);
+	//y<<=(8-i);
 	fwrite(&y, 1, 1, out);
 
     free(buff);
@@ -237,7 +237,7 @@ int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
         if( buff[j] == '1')
              y |= (1 << (7 - j));
     }
-	y<<=(8-i);
+	//y<<=(8-i);
 	fwrite(&y, 1, 1, out);
 
     free(buff);
