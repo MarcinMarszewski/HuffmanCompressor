@@ -15,7 +15,7 @@
 //-1 Nie udało się otworzyć pliku
 //-2 Nieodpowiedni stopień kompresji
 //-3 Plik z 1 lub mniej bajtów
-//-4 Plik uszkodzony lub XOR-owany bajt niepoprawny
+//-4 Plik skompresowany uszkodzony
 //-5 
 //-6 Brak hasła
 //
@@ -267,7 +267,7 @@ int main(int argc, char **argv) {
 		in = fopen(fileName2, "rb");
 		fseek(in,5,SEEK_SET);
 		xordFileCheck = 0;
-		while(fread(&tmpB, 1, 1, out) == 1)
+		while(fread(&tmpB, 1, 1, in) == 1)
 			xordFileCheck ^= tmpB;
 		fclose(in);
 
@@ -276,8 +276,6 @@ int main(int argc, char **argv) {
 		fwrite(&xordFileCheck, 1, 1, out);
 		fclose(out);
 
-
-		//zapisywanie metadanych
 		freeDynamicArray(nodes);
 	}
 

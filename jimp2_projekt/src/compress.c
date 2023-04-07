@@ -62,11 +62,9 @@ int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned char* rest) {
 	}
 	if( check == 1) {
 			*rest = x>>8;
-			printf("Dlugosc reszty to 8 i wartosc to: %c\n", *rest);
 			return 8;
 	} 
 	else if( check == 0 ){
-		printf("Dlugosc reszty to 0 i wartosc to: %c\n", *rest);
 		return 0;
 	}
 	
@@ -122,17 +120,14 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest) {
 			add( nodes, x2 );
 	} 
 	if(check == 0) {
-		printf("Dlugosc reszty to 0 i wartosc to: %d\n", *rest);
 		return 0;
 	}
 	else if(check == 1) {
 		*rest = x1>>8;
-		printf("Dlugosc reszty to 8 i wartosc to: %d\n", *rest);
 		return 8;
 	}
 	else if(check == 2) {
 		*rest = (*rest | tmp&15);
-		printf("Dlugosc reszty to 4 i wartosc to: %d\n", *rest);
 		return 4;
 	}
 }
@@ -172,11 +167,9 @@ int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
         if( buff[j] == '1')
              y |= (1 << (7 - j));
     }
-	//y<<=(8-i);
 	if(i!=0)fwrite(&y, 1, 1, out);
 
     free(buff);
-	printf("Reszta z kompresji: %d\n", i);
 	return i;
 }
 
@@ -237,10 +230,8 @@ int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
         if( buff[j] == '1')
              y |= (1 << (7 - j));
     }
-	//y<<=(8-i);
 	if(i!=0) fwrite(&y, 1, 1, out);
 
     free(buff);
-	printf("Reszta z kompresji: %d\n", i);
 	return i;
 }
