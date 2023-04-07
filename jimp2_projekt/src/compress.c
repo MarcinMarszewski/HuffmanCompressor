@@ -173,7 +173,7 @@ int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
              y |= (1 << (7 - j));
     }
 	//y<<=(8-i);
-	fwrite(&y, 1, 1, out);
+	if(i!=0)fwrite(&y, 1, 1, out);
 
     free(buff);
 	printf("Reszta z kompresji: %d\n", i);
@@ -238,7 +238,7 @@ int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
              y |= (1 << (7 - j));
     }
 	//y<<=(8-i);
-	fwrite(&y, 1, 1, out);
+	if(i!=0) fwrite(&y, 1, 1, out);
 
     free(buff);
 	printf("Reszta z kompresji: %d\n", i);

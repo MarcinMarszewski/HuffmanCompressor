@@ -133,7 +133,6 @@ int main(int argc, char **argv) {
 		uncompressed=(compressionData%4)*4;
 		compressionData>>=2;
 		leftover=compressionData%8;
-		leftover=0;///////
 		
 		printf("compression:%d uncompressed:%d leftover:%d compressionData:%d\n",compression,uncompressed,leftover,compressionData);
 	
@@ -227,7 +226,6 @@ int main(int argc, char **argv) {
 				WriteTreeFillBite(nodes->t[nodes->n-1]);
 				SetDecode(0);
 				leftover = 8-compressToFile_12(in,out,keys);
-				leftover=0;//
 				fclose(in);
 			break;
 

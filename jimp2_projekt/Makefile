@@ -1,17 +1,26 @@
 compile:
 	cc src/main.c src/key.c src/node.c src/fileWriter.c src/fileReader.c src/treeWriter.c src/compress.c src/decompress.c
 
+compress16:
+	./a.out -f data/simple.txt -s data/simple.zip -o 16
+
 compress12:
 	./a.out -f data/simple.txt -s data/simple.zip -o 12
 
 compress8:
-	./a.out -f data/simple.txt -s data/simple.zip -p haslo
+	./a.out -f data/simple.txt -s data/simple.zip
 
 decompress:
-	./a.out -f data/simple.zip -s data/simple.dec -p haslo
+	./a.out -f data/simple.zip -s data/simple.dec
 
 compare:
 	diff data/simple.txt data/simple.dec
+
+test16:
+	make compile
+	make compress16
+	make decompress
+	make compare
 
 test12:
 	make compile

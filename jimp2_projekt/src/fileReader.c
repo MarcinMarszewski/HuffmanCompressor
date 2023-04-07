@@ -25,7 +25,6 @@ char TakeBitFromFile()
 	{
 		pointer=0;
 		tmp=next^decode;
-		printf("decode:%d\n",decode);
 		if(fread(&next,1,1,read)==0)countTillEnd=8-leftover;
 	}
 
