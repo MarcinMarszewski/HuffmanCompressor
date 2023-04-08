@@ -33,14 +33,14 @@ void displayHelp(){
 }
 int main(int argc, char **argv) {
 
-	int i, option;
+	int i, option, isVerbose=0;
 	FILE* in;
 	FILE *out;
 	char* fileName  = malloc(100*sizeof(*fileName));
 	char* fileName2 = malloc(100*sizeof(*fileName2));
 	unsigned char xordPassword=0,isCompressed=0,compression=8,uncompressed=0,leftover=0,xordFileCheck=0,compressionData,tmpA,tmpB, uncompressedData;
 
-	while((option=getopt(argc,argv,"s:f:o:p:h"))!=-1)
+	while((option=getopt(argc,argv,"s:f:o:p:hv"))!=-1)
 	{
 		switch(option)
 		{
@@ -64,6 +64,10 @@ int main(int argc, char **argv) {
 			case 'p':
 				for(i=0;i<strlen(optarg);i++)xordPassword=xordPassword^optarg[i];
 				break;
+			
+			case 'v':
+				isVerbose=1;
+				break;
 
 			case '?':
 				fprintf(stderr,"Nieznany argument: %c\n",optopt);
@@ -83,7 +87,6 @@ int main(int argc, char **argv) {
 
 	if(strcmp(fileName,fileName2)==0)
 	{
-		printf("%s %s\n",fileName,fileName2);
 		fprintf(stderr,"Plik wejściowy i wyjściowy o takiej samej nazwie\n");
 		return -5;
 	}
@@ -119,10 +122,13 @@ int main(int argc, char **argv) {
 	fread(&compressionData,1,1,in);
 	fread(&xordFileCheck,1,1,in);	//wczytanie pierwszych 5 bajtów metadanych
 	fread(&uncompressedData,1,1,in);
-	printf("dekompresja nieskompresowane: %d\n",uncompressedData);
 	if(isCompressed==1)
 	{
-		//XOR-owanie przed dekompresją
+		if (isVerbose==1)
+		{
+			printf("XOR-owanie bitu sprawdzającego");
+		}
+		
 		while(fread(&tmpB, 1, 1, in) == 1)
 			xordFileCheck ^= tmpB;
 		fclose(in);
@@ -143,8 +149,11 @@ int main(int argc, char **argv) {
 		
 		printf("compression:%d uncompressed:%d leftover:%d compressionData:%d\n",compression,uncompressed,leftover,compressionData);
 	
-	
-		printf("Dekompresja\n");
+		if (isVerbose==1)
+		{
+			printf("Dekompresja\n");
+		}
+		
 		if(strlen(fileName2)==0)
 		{
 			strcpy(fileName2,fileName);
@@ -174,7 +183,8 @@ int main(int argc, char **argv) {
 	}
 	else
 	{
-		printf("Kompresja\n");
+		if(isVerbose==1)
+			printf("Kompresja\n");
 
 		fclose(in);
 	
@@ -203,8 +213,7 @@ int main(int argc, char **argv) {
 		switch(compression)//leftover uncompressed compression
 		{
 			case 8:
-				printf("kompresja 8\n");
-				leavesMaker_8(in,nodes);
+				leavesMaker_8(in, nodes, isVerbose);
 				fclose(in);
 				if(nodes->n == 1){
 					fprintf(stderr, "Plik sklada sie z jednego rodzaju bajta!\n");
@@ -215,7 +224,7 @@ int main(int argc, char **argv) {
 
 				//keys = InitKeyArray(256);
 				keys = malloc(256*sizeof(*keys));
-				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
+				AssignKeys(*nodes->t[nodes->n-1],keys,0,0,isVerbose);
 				SetWordSize(8);
 
 				InitFile(out);
@@ -227,7 +236,7 @@ int main(int argc, char **argv) {
 			break;
 
 			case 12:
-				uncompressed = leavesMaker_12(in, nodes, &tempRest);
+				uncompressed = leavesMaker_12(in, nodes, &tempRest, isVerbose);
 				fclose(in);
 				if(nodes->n == 1){
 					fprintf(stderr, "Plik sklada sie z jednego rodzaju bajta!\n");
@@ -238,7 +247,7 @@ int main(int argc, char **argv) {
 
 				//keys = InitKeyArray(4096);
 				keys = malloc(4096*sizeof(*keys));
-				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
+				AssignKeys(*nodes->t[nodes->n-1],keys,0,0,isVerbose);
 				SetWordSize(12);
 
 				InitFile(out);
@@ -250,7 +259,7 @@ int main(int argc, char **argv) {
 			break;
 
 			case 16:
-				uncompressed = leavesMaker_16(in,nodes, &tempRest);
+				uncompressed = leavesMaker_16(in, nodes, &tempRest, isVerbose);
 				fclose(in);
 				if(nodes->n == 1){
 					fprintf(stderr, "Plik sklada sie z jednego rodzaju bajta!\n");
@@ -261,7 +270,7 @@ int main(int argc, char **argv) {
 
 				//keys = InitKeyArray(65536);
 				keys = malloc(65536*sizeof(*keys));
-				AssignKeys(*nodes->t[nodes->n-1],keys,0,0);
+				AssignKeys(*nodes->t[nodes->n-1],keys,0,0,isVerbose);
 				SetWordSize(16);
 
 				InitFile(out);
@@ -272,7 +281,6 @@ int main(int argc, char **argv) {
 				fclose(in);
 			break;
 		} //kompresja
-		
 
 		compressionData = 0;
 		compressionData+=leftover;
@@ -280,7 +288,6 @@ int main(int argc, char **argv) {
 		compressionData+=uncompressed/4;
 		compressionData<<=2;
 		compressionData+=(compression/4)-1;
-		printf("kompresja nieskompresowane: %d\n",tempRest);
 		
 		printf("compression:%d uncompressed:%d leftover:%d compressionData:%d \n",compression,uncompressed,leftover, compressionData);
 		fseek(out,2,SEEK_SET);
@@ -306,6 +313,7 @@ int main(int argc, char **argv) {
 		free(nodes->t);
 		free(nodes);
 		free(keys);
+		printf("\nKompresja zakonczona sukcesem!\n");
 	}
 
 	free(fileName);

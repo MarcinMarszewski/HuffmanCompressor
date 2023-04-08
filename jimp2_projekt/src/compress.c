@@ -9,7 +9,13 @@
 //MAKING LEAVES FROM FILE
 
 //8 bits
-void leavesMaker_8 (FILE *in, dynamicArray* nodes) {     //bytes - 1 for 8 bits, 2 for 16 bites
+void printLeaves(dynamicArray* nodes){
+	for(int i=0; i<nodes->n; i++) {
+		printf("Lisc nr %d: wartosc:%d, ilosc wystapien:%d\n", i, nodes->t[i]->value, nodes->t[i]->quantity);
+	}
+}
+
+void leavesMaker_8 (FILE *in, dynamicArray* nodes, int isVerbose) {     //bytes - 1 for 8 bits, 2 for 16 bites
     unsigned short x = 0;
 	while( fread(&x, 1, 1, in ) == 1){
 		int bylo = 0;
@@ -23,10 +29,12 @@ void leavesMaker_8 (FILE *in, dynamicArray* nodes) {     //bytes - 1 for 8 bits,
 		if( bylo == 0 )
 			add( nodes, x );
 	}
+	if(isVerbose==1)
+		printLeaves(nodes);
 }
 
 //16 bits
-int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned char* rest) {     
+int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned char* rest, int isVerbose) {     
 	
 	unsigned short x = 0;
 	unsigned short tmp = '\0';
@@ -67,11 +75,12 @@ int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned char* rest) {
 	else if( check == 0 ){
 		return 0;
 	}
-	
+	if(isVerbose==1)
+		printLeaves(nodes);
 }
 
 //12 bits
-int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest) {
+int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest, int isVerbose) {
 	unsigned short x1 = 0;
 	unsigned short x2 = 0;
 	int byloX1;
@@ -130,6 +139,8 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest) {
 		*rest = (*rest | tmp&15);
 		return 4;
 	}
+	if(isVerbose==1)
+		printLeaves(nodes);
 }
 
 //COMPRESSING DATA FROM FILE IN TO FILE OUT
