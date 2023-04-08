@@ -18,7 +18,7 @@
 //-4 Plik skompresowany uszkodzony
 //-5 Plik wejsciowy i wyjsciowy o takiej samej nazwie
 //-6 Brak hasła
-//-7 Plik wejsciowy zawiera tylko jeden rodzaj bajta - niedozwolone
+//
 // 3 Wywołanie pomocy
 //
 //EXIT_SUCCESS program wykonany w pełni
@@ -221,10 +221,6 @@ int main(int argc, char **argv) {
 			case 8:
 				leavesMaker_8(in, nodes, isVerbose);
 				fclose(in);
-				if(nodes->n == 1){
-					fprintf(stderr, "Plik sklada sie z jednego rodzaju bajta!\n");
-					return -7;
-				}
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
 
@@ -244,10 +240,6 @@ int main(int argc, char **argv) {
 			case 12:
 				uncompressed = leavesMaker_12(in, nodes, &tempRest, isVerbose);
 				fclose(in);
-				if(nodes->n == 1){
-					fprintf(stderr, "Plik sklada sie z jednego rodzaju bajta!\n");
-					return -7;
-				}
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
 
@@ -267,10 +259,6 @@ int main(int argc, char **argv) {
 			case 16:
 				uncompressed = leavesMaker_16(in, nodes, &tempRest, isVerbose);
 				fclose(in);
-				if(nodes->n == 1){
-					fprintf(stderr, "Plik sklada sie z jednego rodzaju bajta!\n");
-					return -7;
-				}
 				in = fopen(fileName,"rb");
 				makeTree(nodes);
 

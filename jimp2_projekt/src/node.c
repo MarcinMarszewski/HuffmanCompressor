@@ -57,11 +57,16 @@ void combineNodes( dynamicArray *da, node_t *min1, node_t *min2 ) {
 void makeTree( dynamicArray *da ) { 
 	node_t tmp1;
 	node_t tmp2;
+	node_t *min1;
+	node_t *min2;
+	if(da->n == 1){
+		add(da, (da->n == 33 ? 34 : 33) );
+	}
 	int l=3;
 	while( l>2 ) {
 		l=0;
-		node_t *min1 = &tmp1;
-       		node_t *min2 = &tmp2;
+		min1 = &tmp1;
+       	min2 = &tmp2;
 		tmp1.quantity = INT_MAX-1;          
 		tmp2.quantity = INT_MAX;
 		for(int i = 0; i < da->n; i++) {
