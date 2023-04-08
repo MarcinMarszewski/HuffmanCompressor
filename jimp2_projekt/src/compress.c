@@ -156,7 +156,6 @@ int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
     while( fread(&x, 1, bytes, in ) == bytes){
 		if(bytes == 2)
 			x = ntohs(x);    //zamienia bajty w shortcie kolejnoscia
-		//strcat(buff, KeyToCode( keys[x] ) );
         	tmp =KeyToCode(keys[x]);//
 		strcat(buff,tmp);//
 		free(tmp);

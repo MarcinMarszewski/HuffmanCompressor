@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 	{
 		if (isVerbose==1)
 		{
-			printf("XOR-owanie bitu sprawdzającego");
+			printf("\nSZUKANIE USZKODZEN W PLIKU\n");
 		}
 		
 		while(fread(&tmpB, 1, 1, in) == 1)
@@ -140,18 +140,23 @@ int main(int argc, char **argv) {
 		in = fopen(fileName, "rb");
 		fseek(in, 5, SEEK_SET);
 		
-		//  pozyskiwanie danych o kompresji
+		if(isVerbose==1)
+			printf("\nPOZYSKIWANIE INFORMACJI O METADANYCH\n\n");
 		compression=(1+(compressionData%4))*4;
 		compressionData>>=2;
 		uncompressed=(compressionData%4)*4;
 		compressionData>>=2;
 		leftover=compressionData%8;
-		
-		printf("compression:%d uncompressed:%d leftover:%d compressionData:%d\n",compression,uncompressed,leftover,compressionData);
+		if(isVerbose==1){
+			printf("Dlugosc slowa kompresji:%d\n"
+			"uncompressed:%d\n" 
+			"leftover:%d\n"
+			"compressionData:%d\n",compression,uncompressed,leftover,compressionData);
+		}
 	
 		if (isVerbose==1)
 		{
-			printf("Dekompresja\n");
+			printf("\nDEKOMPRESJA\n");
 		}
 		
 		if(strlen(fileName2)==0)
@@ -179,12 +184,13 @@ int main(int argc, char **argv) {
 
 		fclose(in);
 		fclose(out);
+		printf("\nDekompresja zakończona sukcesem!\n");
 
 	}
 	else
 	{
 		if(isVerbose==1)
-			printf("Kompresja\n");
+			printf("\nKOMPRESJA\n");
 
 		fclose(in);
 	
