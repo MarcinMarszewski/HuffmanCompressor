@@ -1,17 +1,17 @@
 compile:
-	cc src/main.c src/key.c src/node.c src/fileWriter.c src/fileReader.c src/treeWriter.c src/compress.c src/decompress.c
+	cc src/main.c src/key.c src/node.c src/fileWriter.c src/fileReader.c src/treeWriter.c src/compress.c src/decompress.c -o compilex
 
 compress16:
-	./a.out -f data/simple.txt -s data/simple.zip -o 16
+	./compilex -f data/simple.txt -s data/simple.zip -o 16
 
 compress12:
-	./a.out -f data/simple.txt -s data/simple.zip -o 12
+	./compilex -f data/simple.txt -s data/simple.zip -o 12
 
 compress8:
-	./a.out -f data/simple.txt -s data/simple.zip
+	./compilex -f data/simple.txt -s data/simple.zip
 
 decompress:
-	./a.out -f data/simple.zip -s data/simple.dec
+	./compilex -f data/simple.zip -s data/simple.dec
 
 compare:
 	diff data/simple.txt data/simple.dec
@@ -36,6 +36,6 @@ test8:
 
 testBig8:
 	make compile
-	./a.out -f data/infile.txt -s data/infile.zip
-	./a.out -f data/infile.zip -s data/infile.dec
+	./compilex -f data/infile.txt -s data/infile.zip
+	./compilex -f data/infile.zip -s data/infile.dec
 	diff data/infile.txt data/infile.dec

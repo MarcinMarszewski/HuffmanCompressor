@@ -15,7 +15,7 @@ void AssignKeys(node_t head, key_type *keys, long int val, int len, int isVerbos
 		keys[head.value].length = len;
 		if(isVerbose==1){
 			tmp = KeyToCode(keys[head.value]);
-			printf("Wartosc liscia: %d,  Kod do kompresji dziesietnie: %ld binarnie: %s, lenght: %d\n", head.value, val, tmp, keys[head.value].length);
+			printf("Wartosc liscia: %d,  Kod do kompresji dziesietnie: %ld binarnie: %s\n", head.value, val, tmp);
 			free(tmp);
 		}
 	}

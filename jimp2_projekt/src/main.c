@@ -12,14 +12,13 @@
 #include "decompress.h"
 
 //kody zwrotów i błędów
-//-1 Nie udało się otworzyć pliku
-//-2 Nieodpowiedni stopień kompresji
-//-3 Plik z 1 lub mniej bajtów
-//-4 Plik skompresowany uszkodzony
-//-5 Plik wejsciowy i wyjsciowy o takiej samej nazwie
-//-6 Brak hasła
-//
-// 3 Wywołanie pomocy
+//1 Nie udało się otworzyć pliku
+//2 Nieodpowiedni stopień kompresji
+//3 Plik z 1 lub mniej bajtów
+//4 Plik skompresowany uszkodzony
+//5 Plik wejsciowy i wyjsciowy o takiej samej nazwie
+//6 Brak hasła
+//7 Wywołanie pomocy
 //
 //EXIT_SUCCESS program wykonany w pełni
 //
@@ -29,7 +28,8 @@ void displayHelp(){
 	"-s <plik_wyjsciowy>\n"
 	"-o <stopien_kompresji>\n"
 	"-p <haslo>\n"
-	"-h - wyswietlenie pomocy\n");
+	"-h - wyswietlenie pomocy\n"
+	"-v - tryb verbose\n");
 }
 int main(int argc, char **argv) {
 
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 
 			case 'h':
 				displayHelp();
-				return 3;
+				return 7;
 				break;
 
 			case 'o':
@@ -76,30 +76,30 @@ int main(int argc, char **argv) {
 	}
 	if(strlen(fileName)==0){
 		displayHelp();
-		return 3;
+		return 7;
 	}
 	
 	if(compression!=8&&compression!=12&&compression!=16)
 	{
 		fprintf(stderr,"Nieodpowiednia długość słowa kompresji:%d\nWybierz z:8,12,16\n",compression);
-		return-2;
+		return 2;
 	}
 
 	if(strcmp(fileName,fileName2)==0)
 	{
 		fprintf(stderr,"Plik wejściowy i wyjściowy o takiej samej nazwie\n");
-		return -5;
+		return 5;
 	}
 	if(in==NULL)
 	{
 		fprintf(stderr,"Nie udało się otworzyć pliku %s\n",fileName);
-		return-1;
+		return 1;
 	}
 
 	if(fread(&tmpA,1,1,in)==0||fread(&tmpB,1,1,in)==0)
 	{
 		fprintf(stderr,"Plik zawiera 1 lub mniej bajtów\n");
-		return -3;
+		return 3;
 	}
 
 	if(tmpA==20)
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 			if(xordPassword==0)
 			{
 				fprintf(stderr,"Plik chroniony, należy podać hasło.\n");
-				return -6;
+				return 6;
 			}
 			isCompressed=1;
 		}
@@ -118,7 +118,6 @@ int main(int argc, char **argv) {
 	}
 
 	//Dokąd zrefaktoryzowane//
-	printf("Pass: %d\n",xordPassword);
 	fread(&compressionData,1,1,in);
 	fread(&xordFileCheck,1,1,in);	//wczytanie pierwszych 5 bajtów metadanych
 	fread(&uncompressedData,1,1,in);
@@ -133,8 +132,8 @@ int main(int argc, char **argv) {
 			xordFileCheck ^= tmpB;
 		fclose(in);
 		if(xordFileCheck != 0){
-			fprintf(stderr, "Skompresowany plik jest uszkodzony! - wartosc: %d\n", xordFileCheck);
-			return -4;
+			fprintf(stderr, "Skompresowany plik jest uszkodzony!\n");
+			return 4;
 		}
 
 		in = fopen(fileName, "rb");
@@ -149,9 +148,9 @@ int main(int argc, char **argv) {
 		leftover=compressionData%8;
 		if(isVerbose==1){
 			printf("Dlugosc slowa kompresji:%d\n"
-			"uncompressed:%d\n" 
-			"leftover:%d\n"
-			"compressionData:%d\n",compression,uncompressed,leftover,compressionData);
+			"Liczba bitów nieskopresowanych na końcu:%d\n" 
+			"Liczba bitów służących jako dopełnienie w kompresji:%d\n"
+			"Bajt mówiący o powyższych informacjach:%d\n",compression,uncompressed,leftover,compressionData);
 		}
 	
 		if (isVerbose==1)
@@ -190,7 +189,7 @@ int main(int argc, char **argv) {
 	else
 	{
 		if(isVerbose==1)
-			printf("\nKOMPRESJA\n");
+			printf("\nKOMPRESJA\n\n");
 
 		fclose(in);
 	
@@ -202,6 +201,7 @@ int main(int argc, char **argv) {
 		}
 
 		out = fopen(fileName2,"wb");
+		
 		tmpA=20;
 		
 		fwrite(&tmpA,1,1,out); 
@@ -282,8 +282,7 @@ int main(int argc, char **argv) {
 		compressionData+=uncompressed/4;
 		compressionData<<=2;
 		compressionData+=(compression/4)-1;
-		
-		printf("compression:%d uncompressed:%d leftover:%d compressionData:%d \n",compression,uncompressed,leftover, compressionData);
+
 		fseek(out,2,SEEK_SET);
 		fwrite(&compressionData,1,1,out);
 		fseek(out,4,SEEK_SET);
