@@ -16,10 +16,10 @@ data/big.txt data/plain.txt data/toSmall.txt data/painting.bmp data/duck.png dat
 	@./compilex -f $@ -s data/file.squish -o 8 -p hasloabc
 	@./compilex -f data/file.squish -s data/file.decomp -p hasloabc
 	@diff $@ data/file.decomp
-	@./compilex -f $@ -s data/file.squish -o 8 -p haslo123
+	@./compilex -f $@ -s data/file.squish -o 12 -p haslo123
 	@./compilex -f data/file.squish -s data/file.decomp -p haslo123
 	@diff $@ data/file.decomp
-	@./compilex -f $@ -s data/file.squish -o 8 -p hasloqwe
+	@./compilex -f $@ -s data/file.squish -o 16 -p hasloqwe
 	@./compilex -f data/file.squish -s data/file.decomp -p hasloqwe
 	@diff $@ data/file.decomp
 
