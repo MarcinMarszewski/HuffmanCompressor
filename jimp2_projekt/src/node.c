@@ -37,9 +37,9 @@ void doubleSize( dynamicArray *da ) {
 }
 
 void add( dynamicArray *da, unsigned short x ) {
-        if( da->n == da->size )
-                doubleSize( da );
-        da->t[da->n]->value = x;
+    if( da->n == da->size )
+        doubleSize( da );
+    da->t[da->n]->value = x;
 	da->t[da->n]->quantity++;
 	da->n++;
 }

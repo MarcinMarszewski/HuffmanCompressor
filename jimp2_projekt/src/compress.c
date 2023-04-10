@@ -88,12 +88,14 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest, int isVe
 	unsigned char tmp = 0;
 	int check = 3;
 	*rest = 0;
-
-	while(check == 3){
+	int i=0;
+	while(check >= 3){
 		x1 = 0;
 		x2 = 0;
 		tmp = '\0';
 		check = 0;
+		byloX1 = 0;
+		byloX2 = 0;
 
     	if(fread(&x1, 1, 1, in) == 1){
 			check++;
@@ -110,24 +112,24 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest, int isVe
 			check++;
 			x2 = x2 | tmp;
 		}
-		byloX1 = 0;
-		byloX2 = 0;
+
 		for(int i = 0; i < nodes->n; i++) {
-			if( (nodes->t[i]->value == x1) && (check >=2) ) {
+			if( (nodes->t[i]->value == x1 ) && (check >= 2) ) {
 				byloX1 = 1;
 				nodes->t[i]->quantity++;
 			}
-			else if ( (nodes->t[i]->value == x2) && (check == 3) )
+			else if ( (nodes->t[i]->value == x2 ) && (check == 3) )
 			{
 				byloX2 = 1;
 				nodes->t[i]->quantity++;
 			}
 		}
-		if( (byloX1 == 0) && (check >=2) )
+	
+		if( (byloX1 == 0) && (check >= 2) )
 			add( nodes, x1 );
 		if( (byloX2 == 0) && (check == 3) )
 			add( nodes, x2 );
-	} 
+
 	if(check == 0) {
 		return 0;
 	}
@@ -141,6 +143,7 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest, int isVe
 	}
 	if(isVerbose==1)
 		printLeaves(nodes);
+	}
 }
 
 //COMPRESSING DATA FROM FILE IN TO FILE OUT
@@ -149,7 +152,7 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest, int isVe
 int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
 
     unsigned short x = 0;
-    char *buff = calloc( 64, sizeof( *buff ) );
+    char *buff = calloc( 100, sizeof( *buff ) );
     unsigned char y = 0;
     char* tmp;//
 
@@ -169,7 +172,7 @@ int compressToFile_8_16(FILE *in, FILE *out, int bytes, key_type *keys) {
             fwrite(&y, 1, 1, out);
             y=0;
 
-            for(int i=0; i<56; i++)
+            for(int i=0; i<92; i++)
                 buff[i] = buff[i+8];
         } 
 	}
@@ -194,7 +197,7 @@ int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
 	unsigned short x2 = 0;
 	unsigned char tmp = 0;
 	int check = 3;
-    char *buff = calloc( 64, sizeof( *buff ) );
+    char *buff = calloc( 100, sizeof( *buff ) );
     unsigned char y = 0;
     char* keyGot;
     while(check == 3){
@@ -221,13 +224,13 @@ int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
 		keyGot = KeyToCode(keys[x1]);
 		strcat(buff,keyGot);
 		free(keyGot);	
-	}
+		}
         if(check == 3){
            // strcat(buff, KeyToCode( keys[x2] ) );
 		keyGot = KeyToCode(keys[x2]);
 		strcat(buff,keyGot);
 		free(keyGot);
-	}
+		}
         while( buff[7] != '\0' ){
 
             for(int i=7; i>=0; i--) {
@@ -238,7 +241,7 @@ int compressToFile_12(FILE *in, FILE *out, key_type *keys) {
             fwrite(&y, 1, 1, out);
             y=0;
 
-            for(int i=0; i<56; i++)
+            for(int i=0; i<92; i++)
                 buff[i] = buff[i+8];
         }
 	}
