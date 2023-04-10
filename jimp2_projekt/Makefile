@@ -1,41 +1,34 @@
 compile:
-	cc src/main.c src/key.c src/node.c src/fileWriter.c src/fileReader.c src/treeWriter.c src/compress.c src/decompress.c -o compilex
+	@cc src/main.c src/key.c src/node.c src/fileWriter.c src/fileReader.c src/treeWriter.c src/compress.c src/decompress.c -o compilex
 
-compress16:
-	./compilex -f data/simple.txt -s data/simple.zip -o 16
+testAll: data/big.txt data/plain.txt data/toSmall.txt data/painting.bmp data/duck.png data/Compilex.png verbose badPassword
 
-compress12:
-	./compilex -f data/simple.txt -s data/simple.zip -o 12
+data/big.txt data/plain.txt data/toSmall.txt data/painting.bmp data/duck.png data/Compilex.png: compile
+	@./compilex -f $@ -s data/file.squish -o 8
+	@./compilex -f data/file.squish -s data/file.decomp
+	@diff $@ data/file.decomp
+	@./compilex -f $@ -s data/file.squish -o 12
+	@./compilex -f data/file.squish -s data/file.decomp
+	@diff $@ data/file.decomp
+	@./compilex -f $@ -s data/file.squish -o 16
+	@./compilex -f data/file.squish -s data/file.decomp
+	@diff $@ data/file.decomp
+	@./compilex -f $@ -s data/file.squish -o 8 -p hasloabc
+	@./compilex -f data/file.squish -s data/file.decomp -p hasloabc
+	@diff $@ data/file.decomp
+	@./compilex -f $@ -s data/file.squish -o 8 -p haslo123
+	@./compilex -f data/file.squish -s data/file.decomp -p haslo123
+	@diff $@ data/file.decomp
+	@./compilex -f $@ -s data/file.squish -o 8 -p hasloqwe
+	@./compilex -f data/file.squish -s data/file.decomp -p hasloqwe
+	@diff $@ data/file.decomp
 
-compress8:
-	./compilex -f data/simple.txt -s data/simple.zip
+verbose: compile
+	@./compilex -f data/plain.txt -s data/file.squish -o 8 -v
+	@./compilex -f data/file.squish -s data/file.decomp -v
+	@diff data/plain.txt data/file.decomp
 
-decompress:
-	./compilex -f data/simple.zip -s data/simple.dec
-
-compare:
-	diff data/simple.txt data/simple.dec
-
-test16:
-	make compile
-	make compress16
-	make decompress
-	make compare
-
-test12:
-	make compile
-	make compress12
-	make decompress
-	make compare
-
-test8:
-	make compile
-	make compress8
-	make decompress
-	make compare
-
-testBig8:
-	make compile
-	./compilex -f data/infile.txt -s data/infile.zip
-	./compilex -f data/infile.zip -s data/infile.dec
-	diff data/infile.txt data/infile.dec
+badPassword: compile
+	@./compilex -f data/plain.txt -s data/file.squish -o 8 -p haslo	
+	@./compilex -f data/file.squish -s data/file.decomp -p zlehaslo
+	@diff data/plain.txt data/file.decomp
