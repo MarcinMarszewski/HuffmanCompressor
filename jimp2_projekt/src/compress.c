@@ -18,15 +18,15 @@ void printLeaves(dynamicArray* nodes){
 void leavesMaker_8 (FILE *in, dynamicArray* nodes, int isVerbose) {     //bytes - 1 for 8 bits, 2 for 16 bites
     unsigned short x = 0;
 	while( fread(&x, 1, 1, in ) == 1){
-		int bylo = 0;
+		int was = 0;
 		for(int i = 0; i < nodes->n; i++) {
 			if( nodes->t[i]->value == x ) {
-				bylo = 1;
+				was = 1;
 				nodes->t[i]->quantity++;
 				break;
 			}
 		}
-		if( bylo == 0 )
+		if( was == 0 )
 			add( nodes, x );
 	}
 	if(isVerbose==1)
@@ -39,7 +39,7 @@ int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned char* rest, int isVe
 	unsigned short x = 0;
 	unsigned short tmp = '\0';
 	int check = 2;
-	int bylo;
+	int was;
 	*rest = 0;
 
 	while( check == 2 ){
@@ -55,16 +55,16 @@ int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned char* rest, int isVe
 			check++;
 			x |= (tmp&255);
 		}
-		bylo = 0;
+		was = 0;
 		for(int i = 0; i < nodes->n; i++) {
 			if( nodes->t[i]->value == x ) {
-				bylo = 1;
+				was = 1;
 				nodes->t[i]->quantity++;
 				break;
 			}
 		}
 		
-		if( bylo == 0 && check == 2 )
+		if( was == 0 && check == 2 )
 			add( nodes, x );
 			
 	}
@@ -83,8 +83,8 @@ int leavesMaker_16 (FILE *in, dynamicArray* nodes, unsigned char* rest, int isVe
 int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest, int isVerbose) {
 	unsigned short x1 = 0;
 	unsigned short x2 = 0;
-	int byloX1;
-	int byloX2;
+	int wasX1;
+	int wasX2;
 	unsigned char tmp = 0;
 	int check = 3;
 	*rest = 0;
@@ -94,8 +94,8 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest, int isVe
 		x2 = 0;
 		tmp = '\0';
 		check = 0;
-		byloX1 = 0;
-		byloX2 = 0;
+		wasX1 = 0;
+		wasX2 = 0;
 
     	if(fread(&x1, 1, 1, in) == 1){
 			check++;
@@ -115,19 +115,19 @@ int leavesMaker_12 (FILE *in, dynamicArray *nodes, unsigned char* rest, int isVe
 
 		for(int i = 0; i < nodes->n; i++) {
 			if( (nodes->t[i]->value == x1 ) && (check >= 2) ) {
-				byloX1 = 1;
+				wasX1 = 1;
 				nodes->t[i]->quantity++;
 			}
 			else if ( (nodes->t[i]->value == x2 ) && (check == 3) )
 			{
-				byloX2 = 1;
+				wasX2 = 1;
 				nodes->t[i]->quantity++;
 			}
 		}
 	
-		if( (byloX1 == 0) && (check >= 2) )
+		if( (wasX1 == 0) && (check >= 2) )
 			add( nodes, x1 );
-		if( (byloX2 == 0) && (check == 3) )
+		if( (wasX2 == 0) && (check == 3) )
 			add( nodes, x2 );
 
 	if(check == 0) {
